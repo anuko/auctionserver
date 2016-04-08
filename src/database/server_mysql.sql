@@ -1,29 +1,26 @@
 # Some preliminary ideas on database structure...
 
-# This is mysql specific, probably need to rename the file... right?
 
 # as_currencies table contains currencies supported by auction server.
 CREATE TABLE as_currencies (
-  id integer,          # Currency id.
-  name varchar(3),     # USD, CAD, NZD, etc.
+  id         INTEGER,                       # Currency id.
+  name       VARCHAR(3)       NOT NULL,     # USD, CAD, NZD, etc.
   PRIMARY KEY (id)
 );
 
 # Insert USD as initial currency.
 INSERT INTO as_currencies values(1, 'USD');
 
-# TODO: add a primary key on currency id.
-/*
 
-
-
-
+# as_site table contains details about this auction server installation.
 CREATE TABLE as_site (
-  id                    BIGINT          NOT NULL, // auto-increment?
-  sitename              VARCHAR(64)     NOT NULL, // must be unique
-  PRIMARY KEY (sitename)
+  uuid       CHAR(36)         NOT NULL,     # Random UUID identifying this auction server.
+  sitename   VARCHAR(64)      NOT NULL,     # Name for this server.
+  uri        VARCHAR(256)                   # URI at which the server is available to users.
 );
 
+
+/*
 CREATE TABLE as_user (
   id                    BIGINT          NOT NULL, // auto-increment?
   username              VARCHAR(64)     NOT NULL, // must be unique per site.
