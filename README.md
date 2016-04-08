@@ -8,4 +8,3 @@ Currently, nothing is complete, starting on database design.
 
 TODO:
 - Design a database structure.
-- test
