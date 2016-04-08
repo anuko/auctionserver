@@ -15,8 +15,10 @@ INSERT INTO as_currencies values(1, 'USD');
 # as_site contains details about this auction server installation.
 CREATE TABLE as_site (
   uuid       CHAR(36)         NOT NULL,     # Random UUID identifying this auction server.
-  sitename   VARCHAR(64)      NOT NULL,     # Name for this server.
-  uri        VARCHAR(256)                   # URI at which the server is available to users.
+  site_name  VARCHAR(64)      NOT NULL,     # Name for this server.
+  uri        VARCHAR(256),                  # URI at which the server is available to users.
+  hub_uuid   CHAR(36),                      # Optional hub UUID to connect to.
+  hub_uri    VARCHAR(256),                  # Hub URI.
 );
 
 
@@ -96,7 +98,7 @@ CREATE TABLE as_bids (
 );
 
 
-# as_bids contains closed bids created by local users on local and remote items.
+# as_closed_bids contains closed bids created by local users on local and remote items.
 CREATE TABLE as_closed_bids (
   uuid                  CHAR(36)     NOT NULL,   # Random UUID of the bid.
   site_uuid             CHAR(36),                # Site UUID for the auction item.
