@@ -1,0 +1,80 @@
+Anuko Auction Server Network
+
+The goal of this project is to design a simple yet reasonably reliable distributed auction network.
+
+We see the network consisting of the following entities:
+
+1) Auction Servers.
+2) Hubs.
+3) Superhubs (or root hubs).
+
+To keep the scope of the project small, reliability of network will be addressed only on hubs level,
+by having some redundancy in the following way:
+
+- Servers may connect to hubs.
+- Alternate hubs for each server update each other and downstream servers.
+- Hubs may connect to superhubs.
+- Superhubs update each other and downstream hubs.
+
+This approach will get us reasonable reliability of delivery of messages to each individual auction server.
+Redundancy of individual servers is beyond the scope of this project. It should be addressed by webmasters
+if they wish to do so.
+
+
+AUCTION SERVERS
+
+These are systems that can function individually as auction websites.
+In a standalone mode they self-contain an isolated auction site.
+
+Servers can be conected to hubs to increase their exposure to items and users
+from other sites.
+
+
+HUBS
+
+Hubs are used to connect multiple servers together to encourage transactions between sites.
+To keep things simple yet reliable, we envision a primary and at least one secondary hub for each server.
+
+A server can communicate only to its hubs, but not directly to other servers.
+
+
+SUPERHUBS
+
+Superhubs, or root hubs are on top of hub hierarchy and allow the flow of information between the hubs.
+They never talk to auction servers directly.
+
+
+WORKFLOW - SERVER - INITIALIZATION
+
+At startup, it should talk to its hubs and tell them about itself. Among other things,
+it should tell who the alternate hubs are.
+
+Hubs should:
+
+- Cache this info.
+- Tell the alternates about it.
+- Propagate to superhubs.
+
+
+WORKFLOW - SERVER - AUCTION CREATION
+
+User creates an auction on a server.
+
+- Server caches the info.
+- Server informs its hubs.
+- Hubs update each other and superhubs.
+- Each hub informs all downstream servers connected to it.
+- Each superhub informs all downstream hubs connected to it, which in turn update their downstream servers
+and alternate hubs for each.
+
+The same workflow applies to all other activities - editing auctions, deleting them, placing bids, etc.
+
+This redundancy will get us some duplicate messages. Each node should ignore an already processed message,
+identified by its UUID created at origin.
+
+
+AUCTION COMPLETION WORKFLOW
+
+This should be done by the server where auction originated.
+In other words, the server that sent a winning bid does nothing after auction closure,
+unless it "owns" the auction, in which case it does the closure workflow.
