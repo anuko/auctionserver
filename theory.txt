@@ -2,26 +2,14 @@ Anuko Auction Server Network
 
 The goal of this project is to design a simple yet reasonably reliable distributed auction network.
 
-We see the network consisting of the following entities:
+We see the network consisting of the following entity (or node) types:
 
-1) Auction Servers.
+1) Auction servers.
 2) Hubs.
 3) Superhubs (or root hubs).
 
-To keep the scope of the project small, reliability of network will be addressed only on hubs level,
-by having some redundancy in the following way:
 
-- Servers may connect to hubs.
-- Alternate hubs for each server update each other and downstream servers.
-- Hubs may connect to superhubs.
-- Superhubs update each other and downstream hubs.
-
-This approach will get us reasonable reliability of delivery of messages to each individual auction server.
-Redundancy of individual servers is beyond the scope of this project. It should be addressed by webmasters
-if they wish to do so.
-
-
-AUCTION SERVERS
+AUCTION SERVER NODE
 
 These are systems that can function individually as auction websites.
 In a standalone mode they self-contain an isolated auction site.
@@ -29,48 +17,63 @@ In a standalone mode they self-contain an isolated auction site.
 Servers can be conected to hubs to increase their exposure to items and users
 from other sites.
 
+Auction servers are end nodes in the network.
 
-HUBS
+A standalonge auction server is not connected to any upstream or downstream nodes.
+
+A networked downstream auction server is connected to upstream nodes but does not have any downstream nodes.
+
+
+HUB NODE
 
 Hubs are used to connect multiple servers together to encourage transactions between sites.
-To keep things simple yet reliable, we envision a primary and at least one secondary hub for each server.
+To keep things simple yet reliable, we envision a primary and at least one secondary hub for each downstream server.
 
-A server can communicate only to its hubs, but not directly to other servers.
-
-
-SUPERHUBS
-
-Superhubs, or root hubs are on top of hub hierarchy and allow the flow of information between the hubs.
-They never talk to auction servers directly.
+The difference between a downstream server and a hub is: a hub has downstream nodes to communicate with.
 
 
-WORKFLOW - SERVER - INITIALIZATION
+ROOT HUB NODE
 
-At startup, it should talk to its hubs and tell them about itself. Among other things,
-it should tell who the alternate hubs are.
+In context of this project, a root hub is simply a node that does not have any upstream nodes.
 
-Hubs should:
-
-- Cache this info.
-- Tell the alternates about it.
-- Propagate to superhubs.
+Any of the node types should function as auction server.
 
 
-WORKFLOW - SERVER - AUCTION CREATION
+REDUNDANCY
 
-User creates an auction on a server.
+We aim at achieving reasonable reliability of network by having some redundancy in the following way:
 
-- Server caches the info.
-- Server informs its hubs.
-- Hubs update each other and superhubs.
-- Each hub informs all downstream servers connected to it.
-- Each superhub informs all downstream hubs connected to it, which in turn update their downstream servers
-and alternate hubs for each.
+- Nodes may use multiple upstream nodes (by configuring them so).
+- Nodes that receive a message attempt to update its downstream and upstream nodes.
+- Duplicate messages will be processed only once by nodes themselves.
+- Undelivered messages be retried a reasonable number of times, then discarded.
 
-The same workflow applies to all other activities - editing auctions, deleting them, placing bids, etc.
+This approach will get us reasonable reliability of delivery of messages to each individual auction server.
+Redundancy of individual servers is beyond the scope of this project. It should be addressed by webmasters
+if they wish to do so.
 
-This redundancy will get us some duplicate messages. Each node should ignore an already processed message,
-identified by its UUID created at origin.
+
+NODE INITIALIZATION
+
+At startup, any node should contact upstream nodes and tell them about itself.
+
+
+MESSAGE DELIVERY
+
+User creates an auction on a server or places a bid, this needs to propagated to participating nodes
+via messaging.
+
+- Node updates its own state and the database.
+- Node attempts to post a message to all upstream and downstream nodes.
+- If all retries to a downstream node fail, it is deactivated and excluded from further messages.
+
+
+MESSAGE PROCESSING
+
+- If a message is a duplicate, it is discarded.
+- Node updates its own state and the database.
+- Node attempts to post a message to all upstream and downstream nodes.
+- If all retries to a downstream node fail, it is deactivated and excluded from further messages.
 
 
 AUCTION COMPLETION WORKFLOW
