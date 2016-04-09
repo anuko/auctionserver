@@ -1,7 +1,7 @@
 # MySQL-specific code to create tables for auction server.
 
 
-# as_currencies contains currencies supported by auction server.
+# as_currencies contains currencies supported by this auction server.
 CREATE TABLE as_currencies (
   id         INTEGER,                       # Currency id.
   name       VARCHAR(3)       NOT NULL,     # USD, CAD, NZD, etc.
