@@ -1,63 +1,39 @@
 Anuko Auction Server
 
-The goal of this project is to design a simple yet reasonably reliable distributed auction network.
+The goal of this project is to design a simple distributed auction network.
 
-We see a software package consisting of the following components:
+We see such network consisting of the following components:
 
 1) Auction server.
 2) Hub.
 
-Either part is optional.
+
+STANDALONE AUCTION SERVER
+
+In a standalone mode Auction Server self-contains an isolated auction site.
+Standalone mode means the server is not connected to any hubs.
 
 
-AUCTION SERVER
+NETWORKED AUCTION SERVER
 
-In a standalone mode it is an isolated auction site. In a networked mode (when installed with a hub)
-the server is connected to other participating servers.
+In a networked mode (when installed with a hub) the server is connected to other participating servers.
+It increases server exposure to users from other sites.
 
 
 HUB
 
-A standalone hub installition is only a communication component that talks to other hubs.
-It transmits messages to upstream and downstream hubs. It does not know what these messages are.
-Therefore, a hub can be used with other applications, such as a doit server (freelance gigs) or others.
-
-Some redundancy is achieved in the following way:
-- Hubs may use multiple upstream hubs (by configuring them so).
-- Hubs that receive a message attempt to transmit it to its downstream and upstream hubs.
-- Duplicate messages are processed only once by each hub.
-- Undelivered messages are retried a reasonable number of times, then discarded.
-
-This approach gets us a reasonable reliability of delivery of messages to each individual site.
-Redundancy of sites is beyond the scope of this project. It should be addressed by webmasters
-if they wish to do so.
-
-
-HUB INITIALIZATION
-
-At startup, any node should contact upstream nodes and tell them about itself.
-
-
-MESSAGE DELIVERY
-
-User creates an auction on a server or places a bid, this needs to propagated to participating nodes
-via messaging.
-
-- Node updates its own state and the database.
-- Node attempts to post a message to all upstream and downstream nodes.
-- If all retries to a downstream node fail, it is deactivated and excluded from further messages.
-
-
-MESSAGE PROCESSING
-
-- If a message is a duplicate, it is discarded.
-- Node updates its own state and the database.
-- Node attempts to post a message to all upstream and downstream nodes.
-- If all retries to a downstream node fail, it is deactivated and excluded from further messages.
+A hub is a separate project, see anuko/hub. It can be used to connect multiple server types together.
 
 
 AUCTION COMPLETION WORKFLOW
 
-This should be done by the server where auction originated.
-In other words, the server that sent a winning bid does nothing after auction closure,
-unless it "owns" the auction, in which case it does the closure workflow.
+In a standalone mode everything is done by one server as all users are local to it.
+
+In a networked mode users are at different locations. For example, seller is at server A and bidder is at server B.
+
+We'll design a networked system in a way so that each user only deals with its local server.
+
+Therefore, in our example server A will communicate to the seller, and server B to the bidder.
+
+This will hopefully reduce localization and workflow (versioning) issues that may arise when a foreign server
+communicates to a local user.
