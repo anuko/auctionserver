@@ -1,59 +1,39 @@
-Anuko Auction Server Network
+Anuko Auction Server
 
 The goal of this project is to design a simple yet reasonably reliable distributed auction network.
 
-We see the network consisting of the following entity (or node) types:
+We see a software package consisting of the following components:
 
-1) Auction servers.
-2) Hubs.
-3) Superhubs (or root hubs).
+1) Auction server.
+2) Hub.
 
-
-AUCTION SERVER NODE
-
-These are systems that can function individually as auction websites.
-In a standalone mode they self-contain an isolated auction site.
-
-Servers can be conected to hubs to increase their exposure to items and users
-from other sites.
-
-Auction servers are end nodes in the network.
-
-A standalonge auction server is not connected to any upstream or downstream nodes.
-
-A networked downstream auction server is connected to upstream nodes but does not have any downstream nodes.
+Either part is optional.
 
 
-HUB NODE
+AUCTION SERVER
 
-Hubs are used to connect multiple servers together to encourage transactions between sites.
-To keep things simple yet reliable, we envision a primary and at least one secondary hub for each downstream server.
-
-The difference between a downstream server and a hub is: a hub has downstream nodes to communicate with.
+In a standalone mode it is an isolated auction site. In a networked mode (when installed with a hub)
+the server is connected to other participating servers.
 
 
-ROOT HUB NODE
+HUB
 
-In context of this project, a root hub is simply a node that does not have any upstream nodes.
+A standalone hub installition is only a communication component that talks to other hubs.
+It transmits messages to upstream and downstream hubs. It does not know what these messages are.
+Therefore, a hub can be used with other applications, such as a doit server (freelance gigs) or others.
 
-Any of the node types should function as auction server.
+Some redundancy is achieved in the following way:
+- Hubs may use multiple upstream hubs (by configuring them so).
+- Hubs that receive a message attempt to transmit it to its downstream and upstream hubs.
+- Duplicate messages are processed only once by each hub.
+- Undelivered messages are retried a reasonable number of times, then discarded.
 
-
-REDUNDANCY
-
-We aim at achieving reasonable reliability of network by having some redundancy in the following way:
-
-- Nodes may use multiple upstream nodes (by configuring them so).
-- Nodes that receive a message attempt to update its downstream and upstream nodes.
-- Duplicate messages will be processed only once by nodes themselves.
-- Undelivered messages be retried a reasonable number of times, then discarded.
-
-This approach will get us reasonable reliability of delivery of messages to each individual auction server.
-Redundancy of individual servers is beyond the scope of this project. It should be addressed by webmasters
+This approach gets us a reasonable reliability of delivery of messages to each individual site.
+Redundancy of sites is beyond the scope of this project. It should be addressed by webmasters
 if they wish to do so.
 
 
-NODE INITIALIZATION
+HUB INITIALIZATION
 
 At startup, any node should contact upstream nodes and tell them about itself.
 
