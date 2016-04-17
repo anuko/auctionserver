@@ -6,3 +6,6 @@ nbproject/
 /src/mockup/test/
 /src/mockup/build.xml
 /src/mockup/manifest.mf
+/dist/
+/build/
+build.xml
