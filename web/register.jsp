@@ -32,19 +32,25 @@ may be combined with.
   <title><fmt:message key="title"/></title>
 </head>
 <body>
-    
+
 <div class="mobile_layout">
   <img width="300px" height="30px" src="auctionserver_logo.png">
   <div class="error">${sessionScope.error}</div>
-  <div class="horz_centered"><a href="register.jsp"><fmt:message key="login.label.register"/></a></div>
 
   <form action="login" method="post">
     <div class="login_form">
-      <fmt:message key="login.label.login"/>:
+      <fmt:message key="register.label.login"/>:
       <input type="text" name="login" id="login" size="25" style="width: 220px;" maxlength="100" value="<anuko:loginCookie />">
-      <fmt:message key="login.label.password"/>:
-      <input type="password" name="password" id="password" size="25" style="width: 220px;" maxlength="50" value="">
-      <div class="login_button"><input type="submit" name="btn_login" id="btn_login" value="<fmt:message key="login.button.login"/>"></div>
+      <fmt:message key="register.label.password"/>:
+      <input type="password" name="password1" id="password1" size="25" style="width: 220px;" maxlength="50" value="">
+      <fmt:message key="register.label.confirm_password"/>:
+      <input type="password" name="password2" id="password2" size="25" style="width: 220px;" maxlength="50" value="">
+      <fmt:message key="register.label.full_name"/>:
+      <input type="text" name="full_name" id="full_name" size="25" style="width: 220px;" maxlength="50" value="">      
+      <fmt:message key="register.label.email"/>:
+      <input type="text" name="email" id="email" size="25" style="width: 220px;" maxlength="50" value="">       
+
+      <div class="login_button"><input type="submit" name="btn_submit" id="btn_submit" value="<fmt:message key="register.button.submit"/>"></div>
     </div>
   </form>
 </div>
