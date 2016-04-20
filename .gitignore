@@ -1,11 +1,6 @@
 todo.txt
 nbproject/
-/src/mockup/build/
-/src/mockup/dist/
-/src/mockup/nbproject/
-/src/mockup/test/
-/src/mockup/build.xml
-/src/mockup/manifest.mf
+/src/database/*.sh
 /dist/
 /build/
 build.xml
