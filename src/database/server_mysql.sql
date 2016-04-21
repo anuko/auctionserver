@@ -19,10 +19,11 @@ CREATE TABLE as_users (
   password           CHAR(32)       NOT NULL,   # Password hash.
   name               VARCHAR(64)    NOT NULL,   # User name.
   email              VARCHAR(64)    NOT NULL,   # User email.
+  status             INTEGER,                   # User status.
   PRIMARY KEY (login)
 );
 
-insert into as_users values('aaaab125-1968-4149-89f6-47100f3b92bb', 'test', md5('test'), 'Test', 'test@example.com');
+insert into as_users values('aaaab125-1968-4149-89f6-47100f3b92bb', 'test', md5('test'), 'Test', 'test@example.com', 1);
 
 
 # as_auctions contains auctions known to this site (local and remote).

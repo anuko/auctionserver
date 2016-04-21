@@ -4,12 +4,18 @@ import business.User;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.I18n;
+// import utils.DatabaseManager;
 /**
  * Processes POSTs from login.jsp. Upon successful login it sets an
  * initialized User object in session.
  */
 public class LoginServlet extends HttpServlet {
+
+    private static final Logger Log = LoggerFactory.getLogger(LoginServlet.class);
+    private static final I18n i18n = ApplicationListener.getI18n();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -22,9 +28,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // We use MVC pattern. This servlet is a controller.
-        // LoginServlet only processes POSTs from login.jsp.        
+        // LoginServlet only processes POSTs from login.jsp.
         // Get requests should go directly to the login form.
         response.sendRedirect("login.jsp");
     }
@@ -43,21 +49,21 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Collect parameters.
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-        
+
         HttpSession session = request.getSession();
         session.removeAttribute("user");
         session.removeAttribute("login");
         session.removeAttribute("error");
-        
+
         // Try to login user.
         User user = new User(login, password);
-        if (user.getUserId() > 0) {
+        if (user.getUuid() != null) {
             // Login successful.
-            
+
             // Put a cookie with login name in response. This updates the existing cookie expiration date.
             ServletContext context = this.getServletContext();
             Cookie trackingCookie = new Cookie(context.getInitParameter("loginCookieName"), login);
@@ -65,13 +71,13 @@ public class LoginServlet extends HttpServlet {
             trackingCookie.setMaxAge(age);
             trackingCookie.setPath("/");
             response.addCookie(trackingCookie);
-            
+
             // Initialize user and redirect to lists.jsp view.
             session.setAttribute("user", user);
-            response.sendRedirect("lists.jsp");
+            response.sendRedirect("auctions.jsp");
         } else {
             // Login failed. Set error message and redirect to the login.jsp view.
-            String error = "Incorrect login or password."; // TODO: need to handle localization properly.
+            String error = i18n.get("error.auth");
             session.setAttribute("login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
             session.setAttribute("error", error);
             response.sendRedirect("login.jsp");
