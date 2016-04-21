@@ -42,13 +42,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nik Okuntseff
  */
-public class i18n {
+public class I18n {
 
     private static final Logger Log = LoggerFactory.getLogger(DatabaseManager.class);
     private static ResourceBundle bundle;
 
-    // Constructor.
-    public i18n() {
+    /**
+     * Initializes <code>I18n</code> object with the language from the database.
+     */
+    public I18n() {
 
         String language = "en"; // Default language is English.
         Connection conn = null;

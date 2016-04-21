@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 
-import utils.i18n;
+import utils.I18n;
 
 
 /**
@@ -22,7 +22,7 @@ public class ApplicationListener implements ServletContextListener {
     private static final Logger Log = LoggerFactory.getLogger(ApplicationListener.class);
     private static ServletContext context;
     private static SimpleDateFormat sdf;
-    private static i18n i18n;
+    private static I18n i18n;
 
 
     /**
@@ -37,8 +37,8 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // Initialize i18n.
-        i18n = new i18n();
+        // Initialize I18n.
+        i18n = new I18n();
     }
 
 
@@ -77,11 +77,11 @@ public class ApplicationListener implements ServletContextListener {
 
 
     /**
-     * Returns a static i18n object to get localized resource strings.
+     * Returns a static I18n object to get localized resource strings.
      *
-     * @return initialized <code>i18n</code> object.
+     * @return initialized <code>I18n</code> object.
      */
-    public static i18n getI18n() {
+    public static I18n getI18n() {
         return i18n;
     }
 }
