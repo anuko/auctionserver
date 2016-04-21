@@ -42,10 +42,16 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseManager {
 
+    private static final Logger Log = LoggerFactory.getLogger(DatabaseManager.class);
     public static String dataSourceName = "java:comp/env/jdbc/auctionserver";
 
-    private static final Logger Log = LoggerFactory.getLogger(DatabaseManager.class);
 
+    /**
+     * Obtains a connection to the database.
+     *
+     * @return <code>Connection</code> object.
+     * @throws SQLException if connection cannot be obtained.
+     */
     public static Connection getConnection() throws SQLException {
         try {
             Context ctx = new InitialContext();
@@ -59,6 +65,12 @@ public class DatabaseManager {
         }
     }
 
+
+    /**
+     * Closes a connection to the database.
+     *
+     * @param conn <code>Connection</code> object.
+     */
     public static void closeConnection(Connection conn) {
         if (conn != null) {
             try {
@@ -70,6 +82,12 @@ public class DatabaseManager {
         }
     }
 
+
+    /**
+     * Closes a result set.
+     *
+     * @param rs <code>ResultSet</code> to close.
+     */
     public static void closeResultSet(ResultSet rs) {
         if (rs != null) {
             try {
@@ -81,6 +99,12 @@ public class DatabaseManager {
         }
     }
 
+
+    /**
+     * Closes a statement.
+     *
+     * @param stmt <code>Statement</code> to close.
+     */
     public static void closeStatement(Statement stmt) {
         if (stmt != null) {
             try {
@@ -92,19 +116,17 @@ public class DatabaseManager {
         }
     }
 
-    public static void closeStatement(ResultSet rs, Statement stmt) {
-        closeResultSet(rs);
-        closeStatement(stmt);
-    }
 
+    /**
+     * Closes a result set, a statement, and a connection.
+     *
+     * @param rs <code>ResultSet</code> to close.
+     * @param stmt <code>Statement</code> to close.
+     * @param conn <code>Connection</code> to close.
+     */
     public static void closeConnection(ResultSet rs, Statement stmt, Connection conn) {
         closeResultSet(rs);
         closeStatement(stmt);
         closeConnection(conn);
-    }
-
-    public static void closeConnection(Statement stmt, Connection con) {
-        closeStatement(stmt);
-        closeConnection(con);
     }
 }
