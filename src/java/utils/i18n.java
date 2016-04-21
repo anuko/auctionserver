@@ -22,9 +22,17 @@ may be combined with.
 
 package utils;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +47,34 @@ public class i18n {
     private static final Logger Log = LoggerFactory.getLogger(DatabaseManager.class);
     private static ResourceBundle bundle;
 
-    // Constructor.    
+    // Constructor.
     public i18n() {
-        Locale currentLocale = new Locale("en"); // TODO: obtain it from the database.
+
+        String language = "en"; // Default language is English.
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        // Obtain site language from the database.
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select language from as_site_details");
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                language = rs.getString(1);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        Locale currentLocale = new Locale(language);
         bundle = ResourceBundle.getBundle("i18n.auctionserver", currentLocale);        
     }
-    
+
 
     /**
      * Returns a localized string from the application resource bundle.
