@@ -19,6 +19,8 @@ CREATE TABLE as_users (
   PRIMARY KEY (login)
 );
 
+insert into as_users values('aaaab125-1968-4149-89f6-47100f3b92bb', 'test', md5('test'), 'Test', 'test@example.com');
+
 
 # as_auctions contains auctions known to this site (local and remote).
 CREATE TABLE as_auctions (
