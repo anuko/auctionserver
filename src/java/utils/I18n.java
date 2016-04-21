@@ -27,12 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
