@@ -21,8 +21,6 @@ may be combined with.
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="anuko" uri="/WEB-INF/anuko.tld" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
-<fmt:setLocale value="en" />
-<fmt:setBundle basename="i18n.auctionserver" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,7 +35,7 @@ may be combined with.
   <img width="300px" height="30px" src="auctionserver_logo.png">
   <div class="error">${sessionScope.error}</div>
 
-  <form action="login" method="post">
+  <form action="register" method="post">
     <div class="login_form">
       <fmt:message key="register.label.login"/>:
       <input type="text" name="login" id="login" size="25" style="width: 220px;" maxlength="100" value="<anuko:loginCookie />">

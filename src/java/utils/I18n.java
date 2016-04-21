@@ -29,8 +29,10 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.servlet.jsp.jstl.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import servlets.ApplicationListener;
 
 
 /**
@@ -70,7 +72,16 @@ public class I18n {
         }
 
         Locale currentLocale = new Locale(language);
-        bundle = ResourceBundle.getBundle("i18n.auctionserver", currentLocale);        
+        bundle = ResourceBundle.getBundle("i18n.auctionserver", currentLocale);
+
+        // Set locale and localization context for fmt taglib used in all jsp pages.
+        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALE, currentLocale);
+        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALIZATION_CONTEXT, "i18n.auctionserver");
+        // The above code is here to eliminate the following from each JSP page.
+        /*
+        <fmt:setLocale value="en" />
+        <fmt:setBundle basename="i18n.auctionserver" />
+        */
     }
 
 

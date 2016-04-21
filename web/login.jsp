@@ -21,8 +21,6 @@ may be combined with.
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="anuko" uri="/WEB-INF/anuko.tld" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
-<fmt:setLocale value="en" />
-<fmt:setBundle basename="i18n.auctionserver" />
 <!DOCTYPE html>
 <html>
 <head>
