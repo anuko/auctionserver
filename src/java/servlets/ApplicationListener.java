@@ -6,7 +6,6 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.text.MessageFormat;
@@ -19,9 +18,9 @@ import java.text.MessageFormat;
  *
  * @author Nik Okuntseff
  */
-public class ServerListener implements ServletContextListener {
+public class ApplicationListener implements ServletContextListener {
 
-    private static final Logger Log = LoggerFactory.getLogger(ServerListener.class);
+    private static final Logger Log = LoggerFactory.getLogger(ApplicationListener.class);
     private static ServletContext context;
     private static SimpleDateFormat sdf;
     private static ResourceBundle bundle;
@@ -65,7 +64,7 @@ public class ServerListener implements ServletContextListener {
         return context;
     }
 
-    
+
     /**
      * Returns "yyyy-MM-dd HH:mm:ss" SimpleDateFormat.
      *
