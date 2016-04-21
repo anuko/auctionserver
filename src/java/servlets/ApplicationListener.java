@@ -6,9 +6,8 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.text.MessageFormat;
+
+import utils.i18n;
 
 
 /**
@@ -23,7 +22,8 @@ public class ApplicationListener implements ServletContextListener {
     private static final Logger Log = LoggerFactory.getLogger(ApplicationListener.class);
     private static ServletContext context;
     private static SimpleDateFormat sdf;
-    private static ResourceBundle bundle;
+    private static i18n i18n;
+
 
     /**
      * Initializes the web application as a whole.
@@ -37,9 +37,10 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        Locale currentLocale = new Locale("en"); // TODO: obtain it from the database.
-        bundle = ResourceBundle.getBundle("i18n.auctionserver", currentLocale);
+        // Initialize i18n.
+        i18n = new i18n();
     }
+
 
     /**
      * Does cleanup before the web application exits.
@@ -50,7 +51,7 @@ public class ApplicationListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         context = null;
         sdf = null;
-        bundle = null;
+        i18n = null;
     }
 
 
@@ -76,28 +77,11 @@ public class ApplicationListener implements ServletContextListener {
 
 
     /**
-     * Returns a localized string from the application resource bundle.
+     * Returns a static i18n object to get localized resource strings.
      *
-     * @param key the key of the desired localized string.
-     *
-     * @return localized <code>String</code> associated with the key.
+     * @return initialized <code>i18n</code> object.
      */
-    public static String getString(String key) {
-        return bundle.getString(key);
-    }
-
-
-    /**
-     * Returns a localized string with parameters from the application resource bundle.
-     *
-     * @param key the key of the desired localized string.
-     * @param param variable number of optional parameters to substitute
-     *              in a localized pattern associated with a key.
-     *
-     * @return localized <code>String</code> associated with the key.
-     */
-    public static String getString(String key, String... param) {
-        String pattern = bundle.getString(key);
-        return MessageFormat.format(pattern, param);
+    public static i18n getI18n() {
+        return i18n;
     }
 }
