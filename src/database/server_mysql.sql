@@ -10,7 +10,7 @@ CREATE TABLE as_site_details (
   template           VARCHAR(64)                # Website design template for the site to use.
 );
 
-insert into as_site_details values('bbbab125-1968-4149-89f6-47100f3b92bb', 'Test Auction Server', 'locoalhost:8081/auctionserver/', 'nl', 'responsive');
+insert into as_site_details values('bbbab125-1968-4149-89f6-47100f3b92bb', 'Test Auction Server', 'locoalhost:8081/auctionserver/', 'en', 'responsive');
 
 
 # as_users contains users registered with this site.
