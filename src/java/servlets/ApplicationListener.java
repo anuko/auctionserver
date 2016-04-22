@@ -22,13 +22,20 @@ may be combined with.
 
 package servlets;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
+import javax.servlet.jsp.jstl.core.Config;
+import utils.DatabaseManager;
 
+import utils.SiteBean;
 import utils.I18n;
 
 
@@ -44,6 +51,7 @@ public class ApplicationListener implements ServletContextListener {
     private static final Logger Log = LoggerFactory.getLogger(ApplicationListener.class);
     private static ServletContext context;
     private static SimpleDateFormat sdf;
+    private static SiteBean site;
     private static I18n i18n;
 
 
@@ -59,8 +67,48 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        // Obtain site info from the database.
+        site = new SiteBean();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid, name, uri, language, template from as_site_details");
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                site.setUuid(rs.getString(1));
+                site.setName(rs.getString(2));
+                site.setUri(rs.getString(3));
+                site.setLanguage(rs.getString(4));
+                site.setTemplate(rs.getString(5));
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
         // Initialize I18n.
-        i18n = new I18n();
+        i18n = new I18n(site.getLanguage());
+
+        // Set locale and localization context for fmt taglib used in all jsp pages.
+        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALE, I18n.getLocale());
+        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALIZATION_CONTEXT, "i18n.auctionserver");
+        // The above code is here to eliminate the following from each JSP page.
+        /*
+        <fmt:setLocale value="en" />
+        <fmt:setBundle basename="i18n.auctionserver" />
+        */
+
+        // Set template and style to use as application context attributes.
+        context.setAttribute("template", "/templates/"+site.getTemplate()+"/index.jsp");
+        context.setAttribute("style", context.getContextPath()+"/templates/"+site.getTemplate()+"/style.css");
+
+        // Set context path.
+        context.setAttribute("ctx", context.getContextPath());
     }
 
 

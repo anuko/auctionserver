@@ -43,45 +43,16 @@ import servlets.ApplicationListener;
 public class I18n {
 
     private static final Logger Log = LoggerFactory.getLogger(DatabaseManager.class);
+    private static Locale locale;
     private static ResourceBundle bundle;
 
     /**
      * Initializes <code>I18n</code> object with the language from the database.
      */
-    public I18n() {
+    public I18n(String language) {
 
-        String language = "en"; // Default language is English.
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        // Obtain site language from the database.
-        try {
-            conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select language from as_site_details");
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                language = rs.getString(1);
-            }
-        }
-        catch (SQLException e) {
-            Log.error(e.getMessage(), e);
-        }
-        finally {
-            DatabaseManager.closeConnection(rs, pstmt, conn);
-        }
-
-        Locale currentLocale = new Locale(language);
-        bundle = ResourceBundle.getBundle("i18n.auctionserver", currentLocale);
-
-        // Set locale and localization context for fmt taglib used in all jsp pages.
-        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALE, currentLocale);
-        Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALIZATION_CONTEXT, "i18n.auctionserver");
-        // The above code is here to eliminate the following from each JSP page.
-        /*
-        <fmt:setLocale value="en" />
-        <fmt:setBundle basename="i18n.auctionserver" />
-        */
+        locale = new Locale(language);
+        bundle = ResourceBundle.getBundle("i18n.auctionserver", locale);
     }
 
 
@@ -109,5 +80,13 @@ public class I18n {
     public static String get(String key, String... param) {
         String pattern = bundle.getString(key);
         return MessageFormat.format(pattern, (Object[]) param);
+    }
+
+
+    /**
+     * Returns a <code>Locale</code> to use on website.
+     */
+    public static Locale getLocale() {
+        return locale;
     }
 }
