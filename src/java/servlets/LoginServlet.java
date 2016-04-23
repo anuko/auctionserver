@@ -85,7 +85,7 @@ public class LoginServlet extends HttpServlet {
         session.removeAttribute("error");
 
         if (!auth.doLogin(login, password, session)) {
-            session.setAttribute("login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
+            session.setAttribute("user_login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
             session.setAttribute("error", I18n.get("error.auth"));
             response.sendRedirect("login.jsp");
             return;
@@ -100,10 +100,6 @@ public class LoginServlet extends HttpServlet {
         loginCookie.setDomain(("." + server));
         loginCookie.setPath("/");
         response.addCookie(loginCookie);
-
-        // Create a new User object and store it in session.
-        User user = new User(login, password);
-        session.setAttribute("user", user);
 
         // TODO: decide where to redirect better.
         response.sendRedirect("profile.jsp");

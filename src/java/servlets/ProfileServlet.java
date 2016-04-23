@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import business.User;
 import business.UserHelper;
+import javax.servlet.http.Cookie;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,6 +134,18 @@ public class ProfileServlet extends HttpServlet {
 
         // If we are here, we successfully updated user record.
         if (auth.doLogin(login, password1, session)) {
+
+            // TODO: remove diplication of this code. See LoginServlet.
+            // Remember user login in cookie.
+            Cookie loginCookie = new Cookie(request.getServletContext().getInitParameter("loginCookieName"), login);
+            loginCookie.setMaxAge(Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")));
+            String server = request.getServerName();
+            if (server.startsWith("www."))
+                server = server.substring(4);
+            loginCookie.setDomain(("." + server));
+            loginCookie.setPath("/");
+            response.addCookie(loginCookie);
+
             // TODO: need a better redirect.
             response.sendRedirect("profile.jsp");
         }

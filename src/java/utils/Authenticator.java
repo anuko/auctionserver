@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,7 @@ public class Authenticator {
         session.setAttribute("user_login", user.getLogin());
         session.setAttribute("user_name", user.getName());
         session.setAttribute("user_email", user.getEmail());
+
         return true;
     }
 
