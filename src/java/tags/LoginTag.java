@@ -31,7 +31,7 @@ import javax.servlet.http.*;
 /**
  * Obtains the value of user login string either from the session or cookie (name defined in web.xml).
  */
-public class LoginCookieTag extends TagSupport {
+public class LoginTag extends TagSupport {
 
     public int doStartTag() throws JspException {
 

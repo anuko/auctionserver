@@ -4,8 +4,8 @@
   <short-name>anuko</short-name>
   <uri>/WEB-INF/anuko</uri>
   <tag>
-    <name>loginCookie</name>
-    <tag-class>tags.LoginCookieTag</tag-class>
-    <info>Returns the value of login cookie</info>
+    <name>login</name>
+    <tag-class>tags.LoginTag</tag-class>
+    <info>Returns the value of login string stored either in session or cookie.</info>
   </tag>
 </taglib>

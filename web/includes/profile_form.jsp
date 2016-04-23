@@ -6,7 +6,7 @@
   <div class="login_form">
     <div class="form-group">
       <label for="login"><fmt:message key="register.label.login"/>:</label>
-      <input class="form-control" type="text" name="login" value="<anuko:loginCookie />">
+      <input class="form-control" type="text" name="login" value="<anuko:login />">
     </div>
     <div class="form-group">
       <label for="password1"><fmt:message key="register.label.password"/>:</label>
