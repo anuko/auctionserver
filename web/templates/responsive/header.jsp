@@ -1,4 +1,5 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +13,7 @@
 </head>
 <body>
 
-<!-- Collapsible navigation bar -->
+<!-- Collapsible navigation bar. -->
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -25,10 +26,17 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
+<c:if test="${user == null}">
+        <!-- Menu for not logged in users. -->
         <li><a href="${ctx}/login.jsp"><fmt:message key="menu.login"/></a></li>
         <li><a href="${ctx}/register.jsp"><fmt:message key="menu.register"/></a></li>
-        <li><a href="${ctx}/auctions.jsp"><fmt:message key="menu.auctions"/></a></li> 
-        <li><a href="${ctx}/profile.jsp"><fmt:message key="menu.profile"/></a></li>     
+        <li><a href="${ctx}/auctions.jsp"><fmt:message key="menu.auctions"/></a></li>
+</c:if>
+<c:if test="${user != null}">
+        <!-- Menu for a logged in user. -->
+        <li><a href="${ctx}/auctions.jsp"><fmt:message key="menu.auctions"/></a></li>
+        <li><a href="${ctx}/profile.jsp"><fmt:message key="menu.profile"/></a></li>
+</c:if>
       </ul>
     </div>
   </div>

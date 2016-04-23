@@ -37,6 +37,7 @@ import utils.DatabaseManager;
 
 import utils.SiteBean;
 import utils.I18n;
+import utils.Authenticator;
 
 
 /**
@@ -53,6 +54,7 @@ public class ApplicationListener implements ServletContextListener {
     private static SimpleDateFormat sdf;
     private static SiteBean site;
     private static I18n i18n;
+    private static Authenticator auth;
 
 
     /**
@@ -109,6 +111,9 @@ public class ApplicationListener implements ServletContextListener {
 
         // Set context path.
         context.setAttribute("ctx", context.getContextPath());
+
+        // Initialize authenticator.
+        auth = new Authenticator();
     }
 
 
@@ -121,7 +126,9 @@ public class ApplicationListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         context = null;
         sdf = null;
+        site = null;
         i18n = null;
+        auth = null;
     }
 
 
@@ -153,5 +160,15 @@ public class ApplicationListener implements ServletContextListener {
      */
     public static I18n getI18n() {
         return i18n;
+    }
+
+
+    /**
+     * Returns a static <code>Authenticator</code> object.
+     *
+     * @return initialized <code>Authenticator</code> object.
+     */
+    public static Authenticator getAuthenticator() {
+        return auth;
     }
 }

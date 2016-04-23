@@ -7,7 +7,9 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.I18n;
-// import utils.DatabaseManager;
+import utils.Authenticator;
+
+
 /**
  * Processes POSTs from login.jsp. Upon successful login it sets an
  * initialized User object in session.
@@ -16,6 +18,7 @@ public class LoginServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(LoginServlet.class);
     private static final I18n i18n = ApplicationListener.getI18n();
+    private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -59,29 +62,30 @@ public class LoginServlet extends HttpServlet {
         session.removeAttribute("login");
         session.removeAttribute("error");
 
-        // Try to login user.
-        User user = new User(login, password);
-        if (user.getUuid() != null) {
-            // Login successful.
-
-            // Put a cookie with login name in response. This updates the existing cookie expiration date.
-            ServletContext context = this.getServletContext();
-            Cookie trackingCookie = new Cookie(context.getInitParameter("loginCookieName"), login);
-            int age = Integer.parseInt(context.getInitParameter("loginCookieAge"));
-            trackingCookie.setMaxAge(age);
-            trackingCookie.setPath("/");
-            response.addCookie(trackingCookie);
-
-            // Initialize user and redirect to lists.jsp view.
-            session.setAttribute("user", user);
-            response.sendRedirect("auctions.jsp");
-        } else {
-            // Login failed. Set error message and redirect to the login.jsp view.
-            String error = i18n.get("error.auth");
+        if (!auth.doLogin(login, password, session)) {
             session.setAttribute("login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
-            session.setAttribute("error", error);
+            session.setAttribute("error", I18n.get("error.auth"));
             response.sendRedirect("login.jsp");
+            return;
         }
+
+        // Remember user login in cookie.
+        Cookie loginCookie = new Cookie(request.getServletContext().getInitParameter("loginCookieName"), login);
+        loginCookie.setMaxAge(Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")));
+        String server = request.getServerName();
+        if (server.startsWith("www."))
+            server = server.substring(4);
+        loginCookie.setDomain(("." + server));
+        loginCookie.setPath("/");
+        response.addCookie(loginCookie);
+
+        // Create a new User object and store it in session.
+        User user = new User(login, password);
+        session.setAttribute("user", user);
+
+        // TODO: decide where to redirect better as auctions.jsp should be a public page.
+        response.sendRedirect("auctions.jsp");
+        return;
     }
 
     /**
