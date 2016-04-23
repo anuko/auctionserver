@@ -91,6 +91,14 @@ public class Authenticator {
         // Create a new User object and store it in session.
         User user = new User(login, password);
         session.setAttribute("user", user);
+
+        // Store various user attributes as separate entities in session.
+        // This is needed for the Profile page to display values correctly in case of errors.
+        // TODO: See if a better method exists to provide values to forms,
+        // perhaps via a custom tag.
+        session.setAttribute("user_login", user.getLogin());
+        session.setAttribute("user_name", user.getName());
+        session.setAttribute("user_email", user.getEmail());
         return true;
     }
 

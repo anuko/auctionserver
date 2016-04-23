@@ -80,8 +80,15 @@ public class User
         return login;
     }
 
-    public void setLogin(String login)
+    public String getName()
     {
-        this.login = login;
+        return name;
     }
+
+    public String getEmail()
+    {
+        return email;
+    }
+
+
 }

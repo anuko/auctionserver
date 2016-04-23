@@ -113,5 +113,44 @@ public class UserHelper {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
         return (1 == insertResult);
-  }
+    }
+
+
+    /**
+     * Updates an existing user record in the database.
+     *
+     * @param uuid user UUID.
+     * @param login user login.
+     * @param password user password.
+     * @param full_name user full name.
+     * @param email user email.
+     * @return true on success.
+     */
+    public static boolean update(String uuid, String login, String password, String full_name, String email) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int updateResult = 0;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("update as_users " +
+                "set login = ?, password = md5(?), name = ?, email = ? " +
+                "where uuid = ?");
+            pstmt.setString(1, login);
+            pstmt.setString(2, password);
+            pstmt.setString(3, full_name);
+            pstmt.setString(4, email);
+            pstmt.setString(5, uuid);
+            updateResult = pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return (1 == updateResult);
+    }
 }

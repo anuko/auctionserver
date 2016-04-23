@@ -104,7 +104,7 @@ public class RegistrationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Remove previous error fron the session.
+        // Remove previous error from the session.
         HttpSession session = request.getSession();
         session.removeAttribute("error");
 
