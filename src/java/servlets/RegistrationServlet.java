@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.validator.routines.EmailValidator;
+import utils.Authenticator;
 
 import utils.I18n;
 
@@ -45,6 +46,7 @@ public class RegistrationServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(RegistrationServlet.class);
     private static final I18n i18n = ApplicationListener.getI18n();
+    private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -169,41 +171,11 @@ public class RegistrationServlet extends HttpServlet {
         session.removeAttribute("full_name");
         session.removeAttribute("email");
 
-        // ... and redirect to auctions.jsp page.
-        response.sendRedirect("auctions.jsp");
-
-        // TODO: probably need to auto-login user and put the object in session or something.
-
-        /*
-        HttpSession session = request.getSession();
-        session.removeAttribute("user");
-        session.removeAttribute("login");
-        session.removeAttribute("error");
-
-        // Try to login user.
-        User user = new User(login, password);
-        if (user.getUuid() != null) {
-            // Login successful.
-
-            // Put a cookie with login name in response. This updates the existing cookie expiration date.
-            ServletContext context = this.getServletContext();
-            Cookie trackingCookie = new Cookie(context.getInitParameter("loginCookieName"), login);
-            int age = Integer.parseInt(context.getInitParameter("loginCookieAge"));
-            trackingCookie.setMaxAge(age);
-            trackingCookie.setPath("/");
-            response.addCookie(trackingCookie);
-
-            // Initialize user and redirect to lists.jsp view.
-            session.setAttribute("user", user);
-            response.sendRedirect("auctions.jsp");
-        } else {
-            // Login failed. Set error message and redirect to the login.jsp view.
-            String error = ApplicationListener.getString("error.auth");
-            session.setAttribute("login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
-            session.setAttribute("error", error);
-            response.sendRedirect("login.jsp");
-        }*/
-
+        if (auth.doLogin(login, password1, session)) {
+            // TODO: need a better redirect.
+            response.sendRedirect("profile.jsp");
+            return;
+        }
     }
 
     /**

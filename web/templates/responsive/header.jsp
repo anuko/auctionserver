@@ -34,6 +34,7 @@
 </c:if>
 <c:if test="${user != null}">
         <!-- Menu for a logged in user. -->
+        <li><a href="${ctx}/logout"><fmt:message key="menu.logout"/></a></li>
         <li><a href="${ctx}/auctions.jsp"><fmt:message key="menu.auctions"/></a></li>
         <li><a href="${ctx}/profile.jsp"><fmt:message key="menu.profile"/></a></li>
 </c:if>

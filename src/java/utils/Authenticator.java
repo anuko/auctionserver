@@ -22,6 +22,7 @@ may be combined with.
 
 package utils;
 
+import business.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -87,9 +88,9 @@ public class Authenticator {
         String uuid = authenticate(login, password);
         if (uuid == null) return false;
 
-        session.setAttribute("authenticated", true);
-        session.setAttribute("authenticated_user_uuid", uuid);
-        session.setAttribute("login", login);
+        // Create a new User object and store it in session.
+        User user = new User(login, password);
+        session.setAttribute("user", user);
         return true;
     }
 
@@ -101,8 +102,6 @@ public class Authenticator {
      */
     public void doLogout(HttpSession session) {
 
-        session.removeAttribute("authenticated");
-        session.removeAttribute("authenticated_user_uuid");
-        session.removeAttribute("login");
+        session.removeAttribute("user");
   }
 }
