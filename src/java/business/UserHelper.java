@@ -82,11 +82,11 @@ public class UserHelper {
      *
      * @param login user login.
      * @param password user password.
-     * @param full_name user full name.
+     * @param name user full name.
      * @param email user email.
      * @return true on success.
      */
-    public static boolean insert(String login, String password, String full_name, String email) {
+    public static boolean insert(String login, String password, String name, String email) {
 
         UUID uuid = UUID.randomUUID();
 
@@ -102,7 +102,7 @@ public class UserHelper {
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, login);
             pstmt.setString(3, password);
-            pstmt.setString(4, full_name);
+            pstmt.setString(4, name);
             pstmt.setString(5, email);
             insertResult = pstmt.executeUpdate();
         }
@@ -122,11 +122,11 @@ public class UserHelper {
      * @param uuid user UUID.
      * @param login user login.
      * @param password user password.
-     * @param full_name user full name.
+     * @param name user full name.
      * @param email user email.
      * @return true on success.
      */
-    public static boolean update(String uuid, String login, String password, String full_name, String email) {
+    public static boolean update(String uuid, String login, String password, String name, String email) {
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -140,7 +140,7 @@ public class UserHelper {
                 "where uuid = ?");
             pstmt.setString(1, login);
             pstmt.setString(2, password);
-            pstmt.setString(3, full_name);
+            pstmt.setString(3, name);
             pstmt.setString(4, email);
             pstmt.setString(5, uuid);
             updateResult = pstmt.executeUpdate();

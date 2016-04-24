@@ -82,14 +82,14 @@ public class ProfileServlet extends HttpServlet {
         String login = request.getParameter("login");
         String password1 = request.getParameter("password1");
         String password2 = request.getParameter("password2");
-        String full_name = request.getParameter("full_name");
+        String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
         session.setAttribute("user_login", login);
         session.setAttribute("user_password1", password1);
         session.setAttribute("user_password2", password2);
-        session.setAttribute("user_name", full_name);
+        session.setAttribute("user_name", name);
         session.setAttribute("user_email", email);
 
         // Validate parameters.
@@ -114,8 +114,8 @@ public class ProfileServlet extends HttpServlet {
             response.sendRedirect("profile.jsp");
             return;
         }
-        if (full_name == null || full_name.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.full_name")));
+        if (name == null || name.equals("")) {
+            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.name")));
             response.sendRedirect("profile.jsp");
             return;
         }
@@ -127,7 +127,7 @@ public class ProfileServlet extends HttpServlet {
         // Finished validating user input.
 
         // Update user record.
-        if (!UserHelper.update(user.getUuid(), login, password1, full_name, email)) {
+        if (!UserHelper.update(user.getUuid(), login, password1, name, email)) {
             session.setAttribute("error", i18n.get("error.db"));
             response.sendRedirect("profile.jsp");
             return;

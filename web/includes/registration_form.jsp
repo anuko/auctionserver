@@ -17,12 +17,12 @@
       <input class="form-control" type="password" name="password2" value="${sessionScope.password2}">
     </div>
     <div class="form-group">
-      <label for="full_name"><fmt:message key="register.label.full_name"/>:</label>
-      <input class="form-control" type="text" name="full_name" value="${sessionScope.full_name}">
+      <label for="name"><fmt:message key="register.label.name"/>:</label>
+      <input class="form-control" type="text" name="name" value="${sessionScope.user_name}">
     </div>
     <div class="form-group">
       <label for="email"><fmt:message key="register.label.email"/>:</label>
-      <input class="form-control" type="text" name="email" value="${sessionScope.email}">
+      <input class="form-control" type="text" name="email" value="${sessionScope.user_email}">
     </div>
     <div class="login_button"><input type="submit" name="btn_submit" value="<fmt:message key="register.button.submit"/>"></div>
   </div>

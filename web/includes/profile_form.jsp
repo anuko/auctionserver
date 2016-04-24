@@ -17,8 +17,8 @@
       <input class="form-control" type="password" name="password2" value="${sessionScope.user_password2}">
     </div>
     <div class="form-group">
-      <label for="full_name"><fmt:message key="register.label.full_name"/>:</label>
-      <input class="form-control" type="text" name="full_name" value="${sessionScope.user_name}">
+      <label for="name"><fmt:message key="register.label.name"/>:</label>
+      <input class="form-control" type="text" name="name" value="${sessionScope.user_name}">
     </div>
     <div class="form-group">
       <label for="email"><fmt:message key="register.label.email"/>:</label>

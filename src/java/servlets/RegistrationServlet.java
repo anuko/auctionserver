@@ -112,15 +112,15 @@ public class RegistrationServlet extends HttpServlet {
         String login = request.getParameter("login");
         String password1 = request.getParameter("password1");
         String password2 = request.getParameter("password2");
-        String full_name = request.getParameter("full_name");
+        String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
-        session.setAttribute("login", login);
+        session.setAttribute("user_login", login);
         session.setAttribute("password1", password1);
         session.setAttribute("password2", password2);
-        session.setAttribute("full_name", full_name);
-        session.setAttribute("email", email);
+        session.setAttribute("user_name", name);
+        session.setAttribute("user_email", email);
 
         // Validate parameters.
         if (login == null || login.equals("")) {
@@ -138,8 +138,8 @@ public class RegistrationServlet extends HttpServlet {
             response.sendRedirect("register.jsp");
             return;
         }
-        if (full_name == null || full_name.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.full_name")));
+        if (name == null || name.equals("")) {
+            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.name")));
             response.sendRedirect("register.jsp");
             return;
         }
@@ -157,7 +157,7 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         // Insert user record.
-        if (!UserHelper.insert(login, password1, full_name, email)) {
+        if (!UserHelper.insert(login, password1, name, email)) {
             session.setAttribute("error", i18n.get("error.db"));
             response.sendRedirect("register.jsp");
             return;
@@ -168,8 +168,8 @@ public class RegistrationServlet extends HttpServlet {
         // Remove no longer needed attributes.
         session.removeAttribute("password1");
         session.removeAttribute("password2");
-        session.removeAttribute("full_name");
-        session.removeAttribute("email");
+        //session.removeAttribute("user_name");
+        //session.removeAttribute("user_email");
 
         if (auth.doLogin(login, password1, session)) {
             // TODO: need a better redirect.
