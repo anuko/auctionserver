@@ -80,15 +80,15 @@ public class ProfileServlet extends HttpServlet {
 
         // Collect parameters.
         String login = request.getParameter("login");
-        String password1 = request.getParameter("password1");
-        String password2 = request.getParameter("password2");
+        String password = request.getParameter("password");
+        String confirm_password = request.getParameter("confirm_password");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
         session.setAttribute("user_login", login);
-        session.setAttribute("user_password1", password1);
-        session.setAttribute("user_password2", password2);
+        session.setAttribute("user_password", password);
+        session.setAttribute("user_confirm_password", confirm_password);
         session.setAttribute("user_name", name);
         session.setAttribute("user_email", email);
 
@@ -104,12 +104,12 @@ public class ProfileServlet extends HttpServlet {
             response.sendRedirect("profile.jsp");
             return;
         }
-        if (password1 == null || password1.equals("")) {
+        if (password == null || password.equals("")) {
             session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.password")));
             response.sendRedirect("profile.jsp");
             return;
         }
-        if (!password1.equals(password2)) {
+        if (!password.equals(confirm_password)) {
             session.setAttribute("error", i18n.get("error.not_equal", i18n.get("register.label.password"), i18n.get("register.label.confirm_password")));
             response.sendRedirect("profile.jsp");
             return;
@@ -127,18 +127,22 @@ public class ProfileServlet extends HttpServlet {
         // Finished validating user input.
 
         // Update user record.
-        if (!UserHelper.update(user.getUuid(), login, password1, name, email)) {
+        if (!UserHelper.update(user.getUuid(), login, password, name, email)) {
             session.setAttribute("error", i18n.get("error.db"));
             response.sendRedirect("profile.jsp");
             return;
         }
 
         // If we are here, we successfully updated user record.
-        if (auth.doLogin(login, password1, session)) {
+        if (auth.doLogin(login, password, session)) {
 
             // Remember user login in cookie.
             CookieManager.setCookie(request.getServletContext().getInitParameter("loginCookieName"), login,
                 Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
+
+            // Remove no longer needed attributes.
+            session.removeAttribute("user_password");
+            session.removeAttribute("user_confirm_password");
 
             // TODO: need a better redirect.
             response.sendRedirect("profile.jsp");

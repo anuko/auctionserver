@@ -110,15 +110,15 @@ public class RegistrationServlet extends HttpServlet {
 
         // Collect parameters.
         String login = request.getParameter("login");
-        String password1 = request.getParameter("password1");
-        String password2 = request.getParameter("password2");
+        String password = request.getParameter("password");
+        String confirm_password = request.getParameter("confirm_password");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
         session.setAttribute("user_login", login);
-        session.setAttribute("password1", password1);
-        session.setAttribute("password2", password2);
+        session.setAttribute("user_password", password);
+        session.setAttribute("user_confirm_password", confirm_password);
         session.setAttribute("user_name", name);
         session.setAttribute("user_email", email);
 
@@ -128,12 +128,12 @@ public class RegistrationServlet extends HttpServlet {
             response.sendRedirect("register.jsp");
             return;
         }
-        if (password1 == null || password1.equals("")) {
+        if (password == null || password.equals("")) {
             session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.password")));
             response.sendRedirect("register.jsp");
             return;
         }
-        if (!password1.equals(password2)) {
+        if (!password.equals(confirm_password)) {
             session.setAttribute("error", i18n.get("error.not_equal", i18n.get("register.label.password"), i18n.get("register.label.confirm_password")));
             response.sendRedirect("register.jsp");
             return;
@@ -157,7 +157,7 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         // Insert user record.
-        if (!UserHelper.insert(login, password1, name, email)) {
+        if (!UserHelper.insert(login, password, name, email)) {
             session.setAttribute("error", i18n.get("error.db"));
             response.sendRedirect("register.jsp");
             return;
@@ -166,12 +166,10 @@ public class RegistrationServlet extends HttpServlet {
         // If we are here, we successfully created a new user record.
 
         // Remove no longer needed attributes.
-        session.removeAttribute("password1");
-        session.removeAttribute("password2");
-        //session.removeAttribute("user_name");
-        //session.removeAttribute("user_email");
+        session.removeAttribute("user_password");
+        session.removeAttribute("user_confirm_password");
 
-        if (auth.doLogin(login, password1, session)) {
+        if (auth.doLogin(login, password, session)) {
             // TODO: need a better redirect.
             response.sendRedirect("profile.jsp");
             return;

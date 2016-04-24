@@ -112,6 +112,15 @@ public class Authenticator {
      */
     public void doLogout(HttpSession session) {
 
+        // Our main thing to do is to remove a User object from session,
+        // which is used as an indicator whether users is logged in or not.
         session.removeAttribute("user");
-  }
+
+        // Clear other session attributes that may still be there.
+        session.removeAttribute("user_login");
+        session.removeAttribute("user_password");
+        session.removeAttribute("user_confirm_password");
+        session.removeAttribute("user_name");
+        session.removeAttribute("user_email");
+    }
 }

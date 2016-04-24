@@ -9,12 +9,12 @@
       <input class="form-control" type="text" name="login" value="<anuko:login />">
     </div>
     <div class="form-group">
-      <label for="password1"><fmt:message key="register.label.password"/>:</label>
-      <input class="form-control" type="password" name="password1" value="${sessionScope.password1}">
+      <label for="password"><fmt:message key="register.label.password"/>:</label>
+      <input class="form-control" type="password" name="password" value="${sessionScope.user_password}">
     </div>
     <div class="form-group">
-      <label for="password2"><fmt:message key="register.label.confirm_password"/>:</label>
-      <input class="form-control" type="password" name="password2" value="${sessionScope.password2}">
+      <label for="confirm_password"><fmt:message key="register.label.confirm_password"/>:</label>
+      <input class="form-control" type="password" name="confirm_password" value="${sessionScope.user_confirm_password}">
     </div>
     <div class="form-group">
       <label for="name"><fmt:message key="register.label.name"/>:</label>
