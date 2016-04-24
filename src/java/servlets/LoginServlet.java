@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.I18n;
 import utils.Authenticator;
+import utils.CookieManager;
 
 
 /**
@@ -81,7 +82,7 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         session.removeAttribute("user");
-        session.removeAttribute("login");
+        session.removeAttribute("uer_login");
         session.removeAttribute("error");
 
         if (!auth.doLogin(login, password, session)) {
@@ -92,18 +93,11 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Remember user login in cookie.
-        Cookie loginCookie = new Cookie(request.getServletContext().getInitParameter("loginCookieName"), login);
-        loginCookie.setMaxAge(Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")));
-        String server = request.getServerName();
-        if (server.startsWith("www."))
-            server = server.substring(4);
-        loginCookie.setDomain(("." + server));
-        loginCookie.setPath("/");
-        response.addCookie(loginCookie);
+        CookieManager.setCookie(request.getServletContext().getInitParameter("loginCookieName"), login,
+            Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
 
         // TODO: decide where to redirect better.
         response.sendRedirect("profile.jsp");
-        return;
     }
 
     /**

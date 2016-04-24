@@ -39,7 +39,7 @@ public class LoginTag extends TagSupport {
         HttpSession session = pageContext.getSession();
         ServletContext context = pageContext.getServletContext();
 
-        String login = (String) session.getAttribute("login");
+        String login = (String) session.getAttribute("user_login");
         if (login == null || login.isEmpty()) {
             login = "";
             // Determine login from cookie.
