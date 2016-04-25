@@ -145,7 +145,7 @@ public class ProfileServlet extends HttpServlet {
             session.removeAttribute("user_confirm_password");
 
             // TODO: need a better redirect.
-            response.sendRedirect("profile.jsp");
+            response.sendRedirect("auctions.jsp");
         }
     }
 }
