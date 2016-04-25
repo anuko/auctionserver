@@ -45,7 +45,6 @@ import utils.I18n;
 public class RegistrationServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(RegistrationServlet.class);
-    private static final I18n i18n = ApplicationListener.getI18n();
     private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
     /**
@@ -124,41 +123,41 @@ public class RegistrationServlet extends HttpServlet {
 
         // Validate parameters.
         if (login == null || login.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.login")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.login")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (password == null || password.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.password")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.password")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (!password.equals(confirm_password)) {
-            session.setAttribute("error", i18n.get("error.not_equal", i18n.get("register.label.password"), i18n.get("register.label.confirm_password")));
+            session.setAttribute("error", I18n.get("error.not_equal", I18n.get("register.label.password"), I18n.get("register.label.confirm_password")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (name == null || name.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.name")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.name")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (!EmailValidator.getInstance().isValid(email)) {
-            session.setAttribute("error", i18n.get("error.field", i18n.get("register.label.email")));
+            session.setAttribute("error", I18n.get("error.field", I18n.get("register.label.email")));
             response.sendRedirect("register.jsp");
             return;
         }
         // Finished validating user input.
 
         if (UserHelper.getUserByLogin(login) != null) {
-            session.setAttribute("error", i18n.get("error.user_exists"));
+            session.setAttribute("error", I18n.get("error.user_exists"));
             response.sendRedirect("register.jsp");
             return;
         }
 
         // Insert user record.
         if (!UserHelper.insert(login, password, name, email)) {
-            session.setAttribute("error", i18n.get("error.db"));
+            session.setAttribute("error", I18n.get("error.db"));
             response.sendRedirect("register.jsp");
             return;
         }

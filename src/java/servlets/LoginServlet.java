@@ -22,7 +22,6 @@ may be combined with.
 
 package servlets;
 
-import business.User;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -40,7 +39,6 @@ import utils.CookieManager;
 public class LoginServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(LoginServlet.class);
-    private static final I18n i18n = ApplicationListener.getI18n();
     private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
     /**

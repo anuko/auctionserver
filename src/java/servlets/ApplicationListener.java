@@ -170,16 +170,6 @@ public class ApplicationListener implements ServletContextListener {
 
 
     /**
-     * Returns a static I18n object to get localized resource strings.
-     *
-     * @return initialized <code>I18n</code> object.
-     */
-    public static I18n getI18n() {
-        return i18n;
-    }
-
-
-    /**
      * Returns a static <code>Authenticator</code> object.
      *
      * @return initialized <code>Authenticator</code> object.

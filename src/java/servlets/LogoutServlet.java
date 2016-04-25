@@ -32,7 +32,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Authenticator;
-import utils.I18n;
 
 
 /**
@@ -44,7 +43,6 @@ import utils.I18n;
 public class LogoutServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(LogoutServlet.class);
-    private static final I18n i18n = ApplicationListener.getI18n();
     private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
     /**
