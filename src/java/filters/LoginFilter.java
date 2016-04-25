@@ -80,7 +80,7 @@ public class LoginFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         HttpSession session = httpRequest.getSession();
-        session.removeAttribute("error"); // May have been set previously.
+        //session.removeAttribute("error"); // May have been set previously.
         User user = (User) session.getAttribute("user");
         if (user == null) {
             // No User object found in session. Redirect to login.jsp.

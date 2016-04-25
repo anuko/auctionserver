@@ -97,7 +97,7 @@ public class LoginServlet extends HttpServlet {
             Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
 
         // TODO: decide where to redirect better.
-        response.sendRedirect("profile.jsp");
+        response.sendRedirect("auctions.jsp");
     }
 
     /**

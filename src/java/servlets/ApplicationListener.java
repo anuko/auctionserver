@@ -32,6 +32,9 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import javax.servlet.jsp.jstl.core.Config;
 import utils.DatabaseManager;
 
@@ -69,13 +72,14 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // Obtain site info from the database.
         site = new SiteBean();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
+
+            // Obtain site info from the database.
             pstmt = conn.prepareStatement("select uuid, name, uri, language, template from as_site_details");
             rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -85,6 +89,18 @@ public class ApplicationListener implements ServletContextListener {
                 site.setLanguage(rs.getString(4));
                 site.setTemplate(rs.getString(5));
             }
+
+            // Obtain supported currencies.
+            List<HashMap<String,String>> currencies = new ArrayList<HashMap<String,String>>();
+            pstmt = conn.prepareStatement("select currency from as_currencies order by ord_num");
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                HashMap<String, String> map = new HashMap();
+                map.put("name", rs.getString(1));
+                currencies.add(map);
+            }
+            // Add curency set to the application context.
+            context.setAttribute("currencies", currencies);
         }
         catch (SQLException e) {
             Log.error(e.getMessage(), e);
