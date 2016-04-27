@@ -9,6 +9,14 @@
       <input class="form-control" type="text" name="name" value="${sessionScope.auction_name}">
     </div>
     <div class="form-group">
+        <label for="duration"><fmt:message key="label.duration"/>:</label>
+        <select class="form-control" name="duration">
+<c:forEach var="duration" items="${applicationScope.durations}">
+          <option value="${duration.days}" <c:if test="${duration.days == sessionScope.auction_duration}">selected</c:if>>${duration.days}</option>
+</c:forEach>
+        </select>
+    </div>
+    <div class="form-group">
         <label for="currency"><fmt:message key="label.currency"/>:</label>
         <select class="form-control" name="currency">
 <c:forEach var="currency" items="${applicationScope.currencies}">
