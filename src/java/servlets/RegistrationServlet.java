@@ -22,7 +22,6 @@ may be combined with.
 
 package servlets;
 
-import business.UserHelper;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +31,10 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.validator.routines.EmailValidator;
-import utils.Authenticator;
 
+import utils.Authenticator;
+import beans.UserBean;
+import business.UserHelper;
 import utils.I18n;
 
 /**
@@ -58,9 +59,16 @@ public class RegistrationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Remove previous error from the session.
+        // Do nothing if we don't have UserBean. It must be set in the view.
         HttpSession session = request.getSession();
-        session.removeAttribute("error");
+        UserBean bean = (UserBean) session.getAttribute("register_bean");
+        if (bean == null) {
+            Log.error("UserBean object is null. We are not supposed to get here.");
+            return;
+        }
+
+        // Remove previous page error.
+        session.removeAttribute("register_error");
 
         // Collect parameters.
         String login = request.getParameter("login");
@@ -70,74 +78,66 @@ public class RegistrationServlet extends HttpServlet {
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
-        session.setAttribute("user_login", login);
-        session.setAttribute("user_password", password);
-        session.setAttribute("user_confirm_password", confirm_password);
-        session.setAttribute("user_name", name);
-        session.setAttribute("user_email", email);
+        bean.setLogin(login);
+        bean.setPassword(password);
+        bean.setConfirmPassword(confirm_password);
+        bean.setName(name);
+        bean.setEmail(email);
 
         // Validate parameters.
         if (login == null || login.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.login")));
+            session.setAttribute("register_error", I18n.get("error.empty", I18n.get("label.login")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (password == null || password.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.password")));
+            session.setAttribute("register_error", I18n.get("error.empty", I18n.get("label.password")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (!password.equals(confirm_password)) {
-            session.setAttribute("error", I18n.get("error.not_equal", I18n.get("register.label.password"), I18n.get("register.label.confirm_password")));
+            session.setAttribute("register_error", I18n.get("error.not_equal", I18n.get("label.password"), I18n.get("label.confirm_password")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (name == null || name.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.name")));
+            session.setAttribute("register_error", I18n.get("error.empty", I18n.get("label.name")));
             response.sendRedirect("register.jsp");
             return;
         }
         if (!EmailValidator.getInstance().isValid(email)) {
-            session.setAttribute("error", I18n.get("error.field", I18n.get("register.label.email")));
+            session.setAttribute("register_error", I18n.get("error.field", I18n.get("label.email")));
             response.sendRedirect("register.jsp");
             return;
         }
         // Finished validating user input.
 
         if (UserHelper.getUserByLogin(login) != null) {
-            session.setAttribute("error", I18n.get("error.user_exists"));
+            session.setAttribute("register_error", I18n.get("error.user_exists"));
             response.sendRedirect("register.jsp");
             return;
         }
 
         // Insert user record.
         if (!UserHelper.insert(login, password, name, email)) {
-            session.setAttribute("error", I18n.get("error.db"));
+            session.setAttribute("register_error", I18n.get("error.db"));
             response.sendRedirect("register.jsp");
             return;
         }
 
         // If we are here, we successfully created a new user record.
 
-        // Remove no longer needed attributes.
-        session.removeAttribute("user_password");
-        session.removeAttribute("user_confirm_password");
-
-        if (auth.doLogin(login, password, session)) {
-            // TODO: need a better redirect.
-            response.sendRedirect("auctions.jsp");
+        // Login a new user.
+        if (!auth.doLogin(login, password, session)) {
+            session.setAttribute("register_error", I18n.get("error.db"));
             return;
         }
+
+        // Remove the bean, which is used to pass form data between the view (register.jsp)
+        // and the controller (RegistrationServlet). We no longer need it as we are done.
+        session.removeAttribute("register_bean");
+
+        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
+        response.sendRedirect("my_auctions.jsp");
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

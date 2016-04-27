@@ -91,7 +91,7 @@ public class ProfileServlet extends HttpServlet {
 
         // Validate parameters.
         if (login == null || login.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.login")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.login")));
             response.sendRedirect("profile.jsp");
             return;
         }
@@ -102,22 +102,22 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
         if (password == null || password.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.password")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.password")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (!password.equals(confirm_password)) {
-            session.setAttribute("error", I18n.get("error.not_equal", I18n.get("register.label.password"), I18n.get("register.label.confirm_password")));
+            session.setAttribute("error", I18n.get("error.not_equal", I18n.get("label.password"), I18n.get("label.confirm_password")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (name == null || name.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("register.label.name")));
+            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.name")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (!EmailValidator.getInstance().isValid(email)) {
-            session.setAttribute("error", I18n.get("error.field", I18n.get("register.label.email")));
+            session.setAttribute("error", I18n.get("error.field", I18n.get("label.email")));
             response.sendRedirect("profile.jsp");
             return;
         }
