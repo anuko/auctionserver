@@ -68,6 +68,7 @@ CREATE TABLE as_auctions (
   close_timestamp    CHAR(19)       NOT NULL,   # Close timestamp in format like "2016-04-15 15:00:10".
   currency           CHAR(3)        NOT NULL,   # Currency: USD, CAD, NZD, etc.
   reserve_price      NUMERIC(15,2),             # Reserve price of the auction.
+  bids               INTEGER,                   # Number of bids on the item.
   current_price      NUMERIC(15,2),             # Current price of the auction.
   approved           INTEGER,                   # Whether the auction is approved for site.
   status             INTEGER,                   # Status of the auction.
