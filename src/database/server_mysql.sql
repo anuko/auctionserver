@@ -70,8 +70,8 @@ CREATE TABLE as_auctions (
   reserve_price      NUMERIC(15,2),             # Reserve price of the auction.
   bids               INTEGER,                   # Number of bids on the item.
   current_price      NUMERIC(15,2),             # Current price of the auction.
-  approved           INTEGER,                   # Whether the auction is approved for site.
-  status             INTEGER,                   # Status of the auction.
+  approved           INTEGER,                   # Whether the auction is approved for site. 1 - approved, 0 - disapproved.
+  status             INTEGER,                   # Auction status. 1 - active, 0 - closed, NULL - deleted.
   PRIMARY KEY (uuid)
 );
 # TODO: add indexes.
