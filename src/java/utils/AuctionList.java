@@ -72,7 +72,7 @@ public class AuctionList {
                 auction.setOrigin(rs.getString(2));
                 auction.setSellerUuid(rs.getString(3));
                 auction.setName(rs.getString(4));
-                auction.setEnd(rs.getString(5));
+                auction.setCloseTimestamp(rs.getString(5));
                 list.add(auction);
                 // Limit output to 50 rows to keep things simple for now.
                 if (++count >= 50)
@@ -118,7 +118,7 @@ public class AuctionList {
                 auction.setOrigin(rs.getString(2));
                 auction.setSellerUuid(rs.getString(3));
                 auction.setName(rs.getString(4));
-                auction.setEnd(rs.getString(5));
+                auction.setCloseTimestamp(rs.getString(5));
                 auction.setApproved(rs.getString(6));
                 list.add(auction);
                 // Limit output to 50 rows to keep things simple for now.
