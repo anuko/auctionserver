@@ -39,6 +39,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import utils.AuctionBean;
 import utils.DatabaseManager;
 
 import utils.I18n;
@@ -72,28 +73,35 @@ public class AuctionAddServlet extends HttpServlet {
             return;
         }
 
-        // Remove previous error from the session.
-        session.removeAttribute("error");
+        // Do nothing if we don't have AuctionBean. It must be set in the view.
+        AuctionBean bean = (AuctionBean) session.getAttribute("auction_add_bean");
+        if (bean == null) {
+            Log.error("AuctionBean object is null. We are not supposed to get here.");
+            return;
+        }
+
+        // Remove previous page error.
+        user.getErrorBean().setAuctionAddError(null);
 
         // Collect parameters.
         String name = request.getParameter("name");
-        String currency = request.getParameter("currency");
         String duration = request.getParameter("duration");
+        String currency = request.getParameter("currency");
         String reservePrice = request.getParameter("reserve_price");
         String image_uri = request.getParameter("image_uri");
         String description = request.getParameter("description");
 
         // Set parameters in session for reuse in the view.
-        session.setAttribute("auction_name", name);
-        session.setAttribute("auction_currency", currency);
-        session.setAttribute("auction_duration", duration);
-        session.setAttribute("auction_reserve_price", reservePrice);
-        session.setAttribute("auction_image_uri", image_uri);
-        session.setAttribute("auction_description", description);
+        bean.setName(name);
+        bean.setDuration(duration);
+        bean.setCurrency(currency);
+        bean.setReservePrice(reservePrice);
+        bean.setImageUri(image_uri);
+        bean.setDescription(description);
 
         // Validate parameters.
         if (name == null || name.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.name")));
+            user.getErrorBean().setAuctionAddError(I18n.get("error.empty", I18n.get("label.name")));
             response.sendRedirect("auction_add.jsp");
             return;
         }
@@ -108,7 +116,7 @@ public class AuctionAddServlet extends HttpServlet {
                 reserve_price = Float.parseFloat(reservePrice);
             }
             catch (NumberFormatException e) {
-                session.setAttribute("error", I18n.get("error.field", I18n.get("label.reserve_price")));
+                user.getErrorBean().setAuctionAddError(I18n.get("error.field", I18n.get("label.reserve_price")));
                 response.sendRedirect("auction_add.jsp");
                 return;
             }
@@ -155,10 +163,14 @@ public class AuctionAddServlet extends HttpServlet {
         }
 
         if (1 != insertResult) {
-           session.setAttribute("error", I18n.get("error.db"));
+           user.getErrorBean().setAuctionAddError(I18n.get("error.db"));
            response.sendRedirect("auction_add.jsp");
            return;
         }
+
+        // Remove the bean, which is used to pass form data between the view (auction_add.jsp)
+        // and the controller (AuctionAddServlet). We no longer need it as we are done.
+        session.removeAttribute("auction_add_bean");
 
         // Everything is good, normal exit by a redirect to my_auctions.jsp page.
         response.sendRedirect("my_auctions.jsp");

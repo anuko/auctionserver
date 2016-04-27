@@ -78,7 +78,7 @@ public class AuctionEditServlet extends HttpServlet {
 
         // Do nothing if we don't have AuctionBean. It must be set in the view.
         AuctionBean bean = (AuctionBean) session.getAttribute("auction_edit_bean");
-        if (user == null) {
+        if (bean == null) {
             Log.error("AuctionBean object is null. We are not supposed to get here.");
             return;
         }
@@ -167,8 +167,11 @@ public class AuctionEditServlet extends HttpServlet {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
 
-        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
+        // Remove the bean, which is used to pass form data between the view (auction_edit.jsp)
+        // and the controller (AuctionEditServlet). We no longer need it as we are done.
         session.removeAttribute("auction_edit_bean");
+
+        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
         response.sendRedirect("my_auctions.jsp");
     }
 }
