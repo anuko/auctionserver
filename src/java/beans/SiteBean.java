@@ -19,7 +19,7 @@ This license applies to this document only, not any other software that it
 may be combined with.
 */
 
-package utils;
+package beans;
 
 /**
  * Holds information about a site.

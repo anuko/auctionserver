@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import javax.servlet.jsp.jstl.core.Config;
 import utils.DatabaseManager;
 
-import utils.SiteBean;
+import beans.SiteBean;
 import utils.I18n;
 import utils.Authenticator;
 
