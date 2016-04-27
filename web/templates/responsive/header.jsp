@@ -44,6 +44,4 @@
   </div>
 </nav>
 
-<!-- Error message, if any. -->
 <div class="container">
-  <div class="error">${sessionScope.error}</div>

@@ -1,6 +1,7 @@
 package business;
 
 import java.sql.*;
+import utils.ErrorBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,15 +20,14 @@ public class User
     private String name;                // User name.
     private String email;               // User email.
 
+    private ErrorBean error_bean;       // User errors.
+
     /**
      * Default constructor.
      */
     public User()
     {
-        uuid = null;
-        login = null;
-        name = null;
-        email = null;
+        error_bean = new ErrorBean();
     }
 
     /**
@@ -68,6 +68,8 @@ public class User
         finally {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
+
+        error_bean = new ErrorBean();
     }
 
     public String getUuid()
@@ -91,4 +93,8 @@ public class User
     }
 
 
+    public ErrorBean getErrorBean()
+    {
+        return error_bean;
+    }
 }

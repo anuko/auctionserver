@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DatabaseManager;
 import utils.I18n;
+import utils.AuctionBean;
 
 
 /**
@@ -75,31 +76,38 @@ public class AuctionEditServlet extends HttpServlet {
             return;
         }
 
-        // Remove previous error from the session.
-        session.removeAttribute("error");
+        // Do nothing if we don't have AuctionBean. It must be set in the view.
+        AuctionBean bean = (AuctionBean) session.getAttribute("auction_edit_bean");
+        if (user == null) {
+            Log.error("AuctionBean object is null. We are not supposed to get here.");
+            return;
+        }
+
+        // Remove previous page error.
+        user.getErrorBean().setAuctionEditError(null);
 
         // Collect parameters.
         String uuid = request.getParameter("uuid");
         String name = request.getParameter("name");
-        String currency = request.getParameter("currency");
-        String start = request.getParameter("start");
         String duration = request.getParameter("duration");
+        String currency = request.getParameter("currency");
         String reservePrice = request.getParameter("reserve_price");
         String image_uri = request.getParameter("image_uri");
         String description = request.getParameter("description");
+        String created_timestamp = request.getParameter("created_timestamp");
 
         // Set parameters in session for reuse in the view.
-        session.setAttribute("auction_uuid", uuid);
-        session.setAttribute("auction_name", name);
-        session.setAttribute("auction_currency", currency);
-        session.setAttribute("auction_duration", duration);
-        session.setAttribute("auction_reserve_price", reservePrice);
-        session.setAttribute("auction_image_uri", image_uri);
-        session.setAttribute("auction_description", description);
+        bean.setUuid(uuid);
+        bean.setName(name);
+        bean.setDuration(duration);
+        bean.setCurrency(currency);
+        bean.setReservePrice(reservePrice);
+        bean.setImageUri(image_uri);
+        bean.setDescription(description);
 
         // Validate parameters.
         if (name == null || name.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.name")));
+            user.getErrorBean().setAuctionEditError(I18n.get("error.empty", I18n.get("label.name")));
             response.sendRedirect("auction_edit.jsp");
             return;
         }
@@ -114,7 +122,7 @@ public class AuctionEditServlet extends HttpServlet {
                 reserve_price = Float.parseFloat(reservePrice);
             }
             catch (NumberFormatException e) {
-                session.setAttribute("error", I18n.get("error.field", I18n.get("label.reserve_price")));
+                user.getErrorBean().setAuctionEditError(I18n.get("error.field", I18n.get("label.reserve_price")));
                 response.sendRedirect("auction_edit.jsp");
                 return;
             }
@@ -125,12 +133,9 @@ public class AuctionEditServlet extends HttpServlet {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-Log.error("NIK DEBUG............ uuid is: " + uuid);
-Log.error("NIK DEBUG............ start is: " + start);
-
         Date startDate = new Date();
         try {
-            startDate = ApplicationListener.getSimpleDateFormat().parse(start);
+            startDate = ApplicationListener.getSimpleDateFormat().parse(created_timestamp);
         }
         catch (ParseException e) {
         }
@@ -140,18 +145,19 @@ Log.error("NIK DEBUG............ start is: " + start);
         c.add(Calendar.DAY_OF_YEAR, +days);
         Date close_date = new Date(c.getTimeInMillis());
         String close_timestamp = ApplicationListener.getSimpleDateFormat().format(close_date);
-Log.error("NIK DEBUG............ close_timestamp is: " + close_timestamp);
         try {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("update as_auctions " +
-                "set name = ?, close_timestamp = ?, currency = ?, reserve_price = ? " +
+                "set name = ?, close_timestamp = ?, currency = ?, reserve_price = ?, " +
+                "image_uri = ?, description = ? " +
                 "where uuid = ?");
             pstmt.setString(1, name);
             pstmt.setString(2, close_timestamp);
             pstmt.setString(3, currency);
             pstmt.setFloat(4, reserve_price);
-            pstmt.setString(5, uuid);
-
+            pstmt.setString(5, image_uri);
+            pstmt.setString(6, description);
+            pstmt.setString(7, uuid);
             pstmt.executeUpdate();
         }
         catch (SQLException e) {
@@ -162,6 +168,7 @@ Log.error("NIK DEBUG............ close_timestamp is: " + close_timestamp);
         }
 
         // Everything is good, normal exit by a redirect to my_auctions.jsp page.
+        session.removeAttribute("auction_edit_bean");
         response.sendRedirect("my_auctions.jsp");
     }
 }
