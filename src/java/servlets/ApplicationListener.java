@@ -101,6 +101,18 @@ public class ApplicationListener implements ServletContextListener {
             }
             // Add curency set to the application context.
             context.setAttribute("currencies", currencies);
+
+            // Obtain supported durations.
+            List<HashMap<String,String>> durations = new ArrayList<HashMap<String,String>>();
+            pstmt = conn.prepareStatement("select duration from as_durations order by ord_num");
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                HashMap<String, String> map = new HashMap();
+                map.put("days", rs.getString(1));
+                durations.add(map);
+            }
+            // Add curency set to the application context.
+            context.setAttribute("durations", durations);
         }
         catch (SQLException e) {
             Log.error(e.getMessage(), e);
@@ -176,5 +188,25 @@ public class ApplicationListener implements ServletContextListener {
      */
     public static Authenticator getAuthenticator() {
         return auth;
+    }
+
+
+    /**
+     * Returns a static I18n object to get localized resource strings.
+     *
+     * @return initialized <code>I18n</code> object.
+     */
+    public static I18n getI18n() {
+        return i18n;
+    }
+
+
+    /**
+     * Returns site bean.
+     *
+     * @return initialized <code>SiteBean</code> object.
+     */
+    public static SiteBean getSiteBean() {
+        return site;
     }
 }

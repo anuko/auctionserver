@@ -22,17 +22,24 @@ may be combined with.
 
 package servlets;
 
-import business.UserHelper;
+import business.User;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.text.DecimalFormatSymbols;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
+import utils.DatabaseManager;
 
 import utils.I18n;
 
@@ -57,13 +64,21 @@ public class AuctionAddServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Remove previous error from the session.
+        // Do nothing if we don't have a logged in user.
         HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            Log.error("User object is null. We are not supposed to get here.");
+            return;
+        }
+
+        // Remove previous error from the session.
         session.removeAttribute("error");
 
         // Collect parameters.
         String name = request.getParameter("name");
         String currency = request.getParameter("currency");
+        String duration = request.getParameter("duration");
         String reservePrice = request.getParameter("reserve_price");
         String image_uri = request.getParameter("image_uri");
         String description = request.getParameter("description");
@@ -71,6 +86,7 @@ public class AuctionAddServlet extends HttpServlet {
         // Set parameters in session for reuse in the view.
         session.setAttribute("auction_name", name);
         session.setAttribute("auction_currency", currency);
+        session.setAttribute("auction_duration", duration);
         session.setAttribute("auction_reserve_price", reservePrice);
         session.setAttribute("auction_image_uri", image_uri);
         session.setAttribute("auction_description", description);
@@ -81,10 +97,14 @@ public class AuctionAddServlet extends HttpServlet {
             response.sendRedirect("auction_add.jsp");
             return;
         }
-        // TODO: provide locale-dependent parsing and presentation of floats.
         float reserve_price = 0.0f;
         if (reservePrice != null && !reservePrice.equals("")) {
             try {
+                DecimalFormatSymbols dfs = new DecimalFormatSymbols(ApplicationListener.getI18n().getLocale());
+                if (dfs.getDecimalSeparator() == ',') {
+                    // Replace comma with a dot so that parseFloat below works.
+                    reservePrice = reservePrice.replace(',','.');
+                }
                 reserve_price = Float.parseFloat(reservePrice);
             }
             catch (NumberFormatException e) {
@@ -93,76 +113,54 @@ public class AuctionAddServlet extends HttpServlet {
                 return;
             }
         }
-
-        // Work in progress down from here...
-        session.setAttribute("error", currency);
-        response.sendRedirect("auction_add.jsp");
-        return;
-
-        /*
-        // Validate parameters.
-        if (login == null || login.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.login")));
-            response.sendRedirect("register.jsp");
-            return;
-        }
-        if (password == null || password.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.password")));
-            response.sendRedirect("register.jsp");
-            return;
-        }
-        if (!password.equals(confirm_password)) {
-            session.setAttribute("error", i18n.get("error.not_equal", i18n.get("register.label.password"), i18n.get("register.label.confirm_password")));
-            response.sendRedirect("register.jsp");
-            return;
-        }
-        if (name == null || name.equals("")) {
-            session.setAttribute("error", i18n.get("error.empty", i18n.get("register.label.name")));
-            response.sendRedirect("register.jsp");
-            return;
-        }
-        if (!EmailValidator.getInstance().isValid(email)) {
-            session.setAttribute("error", i18n.get("error.field", i18n.get("register.label.email")));
-            response.sendRedirect("register.jsp");
-            return;
-        }
         // Finished validating user input.
 
-        if (UserHelper.getUserByLogin(login) != null) {
-            session.setAttribute("error", i18n.get("error.user_exists"));
-           response.sendRedirect("register.jsp");
-            return;
+        UUID uuid = UUID.randomUUID();
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        Date now = new Date();
+        String created_timestamp = ApplicationListener.getSimpleDateFormat().format(now);
+        Calendar c = Calendar.getInstance();
+        int days = Integer.parseInt(duration);
+        c.add(Calendar.DAY_OF_YEAR, +days);
+        Date close_date = new Date(c.getTimeInMillis());
+        String close_timestamp = ApplicationListener.getSimpleDateFormat().format(close_date);
+
+        int insertResult = 0;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("insert into as_auctions " +
+                "set uuid = ?, origin = ?, seller_uuid = ?, name = ?, description = ?, " +
+                "image_uri = ?, created_timestamp = ?, close_timestamp = ?, currency = ?, reserve_price = ?");
+            pstmt.setString(1, uuid.toString());
+            pstmt.setString(2, ApplicationListener.getSiteBean().getUuid());
+            pstmt.setString(3, user.getUuid());
+            pstmt.setString(4, name);
+            pstmt.setString(5, description);
+            pstmt.setString(6, image_uri);
+            pstmt.setString(7, created_timestamp);
+            pstmt.setString(8, close_timestamp);
+            pstmt.setString(9, currency);
+            pstmt.setFloat(10, reserve_price);
+            insertResult = pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
         }
 
-        // Insert user record.
-        if (!UserHelper.insert(login, password, name, email)) {
-            session.setAttribute("error", i18n.get("error.db"));
-            response.sendRedirect("register.jsp");
-            return;
+        if (1 != insertResult) {
+           session.setAttribute("error", I18n.get("error.db"));
+           response.sendRedirect("auction_add.jsp");
+           return;
         }
 
-        // If we are here, we successfully created a new user record.
-
-        // Remove no longer needed attributes.
-        session.removeAttribute("user_password");
-        session.removeAttribute("user_confirm_password");
-
-        if (auth.doLogin(login, password, session)) {
-            // TODO: need a better redirect.
-            response.sendRedirect("auctions.jsp");
-            return;
-        }
-        */
+        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
+        response.sendRedirect("my_auctions.jsp");
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
