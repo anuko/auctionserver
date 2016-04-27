@@ -1,7 +1,7 @@
 package business;
 
 import java.sql.*;
-import utils.ErrorBean;
+import beans.ErrorBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

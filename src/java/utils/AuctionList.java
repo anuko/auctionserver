@@ -22,6 +22,7 @@ may be combined with.
 
 package utils;
 
+import beans.AuctionBean;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -1,6 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="utils.AuctionList, utils.AuctionBean, java.util.List" %>
+<%@ page import="utils.AuctionList, beans.AuctionBean, java.util.List" %>
 
 <%
     // Obtain auction items.

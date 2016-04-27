@@ -20,7 +20,7 @@ may be combined with.
 */
 
 
-package utils;
+package beans;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +32,7 @@ import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import servlets.ApplicationListener;
+import utils.DatabaseManager;
 
 
 /**

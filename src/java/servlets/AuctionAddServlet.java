@@ -39,7 +39,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-import utils.AuctionBean;
+import beans.AuctionBean;
 import utils.DatabaseManager;
 
 import utils.I18n;
