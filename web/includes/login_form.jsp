@@ -5,13 +5,13 @@
 <form action="login" method="post">
   <div class="login_form">
     <div class="form-group">
-      <label for="login"><fmt:message key="login.label.login"/>:</label>
+      <label for="login"><fmt:message key="label.login"/>:</label>
       <input class="form-control" type="text" name="login" value="<anuko:login />">
     </div>
     <div class="form-group">
-      <label for="password"><fmt:message key="login.label.password"/>:</label>
+      <label for="password"><fmt:message key="label.password"/>:</label>
       <input class="form-control" type="password" name="password" value="">
     </div>
-    <div class="login_button"><input type="submit" name="btn_login" value="<fmt:message key="login.button.login"/>"></div>
+    <div class="login_button"><input type="submit" name="btn_login" value="<fmt:message key="button.login"/>"></div>
   </div>
 </form>

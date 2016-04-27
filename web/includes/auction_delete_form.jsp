@@ -1,23 +1,28 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="utils.AuctionBean" %>
+<%@ page import="business.User, utils.AuctionBean" %>
 
 <%
-    // Obtain or create a bean to hold form properties.
-    AuctionBean bean = (AuctionBean) session.getAttribute("auction_add_bean");
+    // Obtain auction item.
+    AuctionBean bean = (AuctionBean) session.getAttribute("auction_delete_bean");
     if (bean == null) {
-        bean = new AuctionBean();
-        session.setAttribute("auction_add_bean", bean);
+        User user = (User) session.getAttribute("user");
+        String sellerUuid = user.getUuid();
+        String auctionUuid = request.getParameter("uuid");
+        bean = new AuctionBean(auctionUuid, sellerUuid);
+        session.setAttribute("auction_delete_bean", bean);
     }
     pageContext.setAttribute("bean", bean);
 %>
 
 <!-- Error message, if any. -->
-<div class="error">${user.errorBean.auctionAddError}</div>
+<div class="error">${user.errorBean.auctionDeleteError}</div>
 
-<!-- Auction add form. -->
-<form action="auction_add" method="post">
+<!-- Auction delete form. -->
+<form action="auction_delete" method="post">
   <div class="login_form">
+    <input type="hidden" name="uuid" value="${bean.uuid}">
+    
     <div class="form-group">
       <label for="name"><fmt:message key="label.name"/>:</label>
       <input class="form-control" type="text" name="name" value="${bean.name}">
@@ -50,6 +55,6 @@
       <label for="description"><fmt:message key="label.description"/>:</label>
       <textarea class="form-control" rows="10" name="description">${bean.description}</textarea>
     </div>
-    <div class="login_button"><input type="submit" name="btn_submit" value="<fmt:message key="button.submit"/>"></div>
+    <div class="login_button"><input type="submit" name="btn_submit" value="<fmt:message key="button.delete"/>"></div>
   </div>
 </form>

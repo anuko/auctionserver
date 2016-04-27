@@ -28,6 +28,8 @@
         <th><fmt:message key="label.bids"/></th>
         <th><fmt:message key="label.price"/></th>
         <th><fmt:message key="label.end"/></th>
+        <th><fmt:message key="label.edit"/></th>
+        <th><fmt:message key="label.delete"/></th>
     </tr>
     </thead>
     <tbody>
@@ -38,6 +40,8 @@
         <td>${item.bids}</a></td>
         <td>${item.currentPrice}</a></td>
         <td>${item.closeTimestamp}</a></td>
+        <td><a href="auction_edit.jsp?uuid=${item.uuid}"><fmt:message key="label.edit"/></a></td>
+        <td><a href="auction_delete.jsp?uuid=${item.uuid}"><fmt:message key="label.delete"/></a></td>
     </tr>
 </c:forEach>
     </tbody>

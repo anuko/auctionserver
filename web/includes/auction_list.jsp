@@ -32,8 +32,8 @@
     <tr>
         <td><a href="auction.jsp?uuid=${item.uuid}">${item.name}</a></td>
         <td>${item.bids}</a></td>
-        <td>${item.price}</a></td>
-        <td>${item.end}</a></td>
+        <td>${item.currentPrice}</a></td>
+        <td>${item.closeTimestamp}</a></td>
     </tr>
 </c:forEach>
     </tbody>
