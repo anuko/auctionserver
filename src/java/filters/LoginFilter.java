@@ -22,7 +22,7 @@ may be combined with.
 
 package filters;
 
-import business.User;
+import utils.User;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

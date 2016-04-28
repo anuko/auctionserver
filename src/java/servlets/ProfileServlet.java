@@ -22,6 +22,7 @@ may be combined with.
 
 package servlets;
 
+import beans.AuctionBean;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,13 +31,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import business.User;
-import business.UserHelper;
+import utils.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Authenticator;
 import utils.CookieManager;
+import utils.DatabaseManager;
+import beans.UserBean;
+import utils.UserManager;
 import utils.I18n;
 
 
@@ -72,8 +79,15 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
 
-        // Remove previous error from the session.
-        session.removeAttribute("error");
+        // Do nothing if we don't have UserBean. It must be set in the view.
+        UserBean bean = (UserBean) session.getAttribute("user_edit_bean");
+        if (bean == null) {
+            Log.error("UserBean object is null. We are not supposed to get here.");
+            return;
+        }
+
+        // Remove previous page error.
+        user.getErrorBean().setProfileEditError(null);
 
         // Collect parameters.
         String login = request.getParameter("login");
@@ -83,66 +97,95 @@ public class ProfileServlet extends HttpServlet {
         String email = request.getParameter("email");
 
         // Set parameters in session for reuse in the view.
-        session.setAttribute("user_login", login);
-        session.setAttribute("user_password", password);
-        session.setAttribute("user_confirm_password", confirm_password);
-        session.setAttribute("user_name", name);
-        session.setAttribute("user_email", email);
+        bean.setLogin(login);
+        bean.setPassword(password);;
+        bean.setConfirmPassword(confirm_password);
+        bean.setName(name);
+        bean.setEmail(email);
 
         // Validate parameters.
         if (login == null || login.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.login")));
+            user.getErrorBean().setProfileEditError(I18n.get("error.empty", I18n.get("label.login")));
             response.sendRedirect("profile.jsp");
             return;
         }
         // New login must be unique.
-        if (!login.equals(user.getLogin()) && UserHelper.getUserByLogin(login) != null) {
-            session.setAttribute("error", I18n.get("error.user_exists"));
+        if (!login.equals(user.getLogin()) && UserManager.getUserByLogin(login) != null) {
+            user.getErrorBean().setProfileEditError(I18n.get("error.user_exists"));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (password == null || password.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.password")));
+            user.getErrorBean().setProfileEditError(I18n.get("error.empty", I18n.get("label.password")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (!password.equals(confirm_password)) {
-            session.setAttribute("error", I18n.get("error.not_equal", I18n.get("label.password"), I18n.get("label.confirm_password")));
+            user.getErrorBean().setProfileEditError(I18n.get("error.not_equal", I18n.get("label.password"), I18n.get("label.confirm_password")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (name == null || name.equals("")) {
-            session.setAttribute("error", I18n.get("error.empty", I18n.get("label.name")));
+            user.getErrorBean().setProfileEditError(I18n.get("error.empty", I18n.get("label.name")));
             response.sendRedirect("profile.jsp");
             return;
         }
         if (!EmailValidator.getInstance().isValid(email)) {
-            session.setAttribute("error", I18n.get("error.field", I18n.get("label.email")));
+            user.getErrorBean().setProfileEditError(I18n.get("error.field", I18n.get("label.email")));
             response.sendRedirect("profile.jsp");
             return;
         }
         // Finished validating user input.
 
         // Update user record.
-        if (!UserHelper.update(user.getUuid(), login, password, name, email)) {
-            session.setAttribute("error", I18n.get("error.db"));
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int updateResult = 0;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("update as_users " +
+                "set login = ?, password = md5(?), name = ?, email = ? " +
+                "where uuid = ?");
+            pstmt.setString(1, login);
+            pstmt.setString(2, password);
+            pstmt.setString(3, name);
+            pstmt.setString(4, email);
+            pstmt.setString(5, user.getUuid());
+            updateResult = pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        if (1 != updateResult) {
+            user.getErrorBean().setProfileEditError(I18n.get("error.db"));
             response.sendRedirect("profile.jsp");
             return;
         }
 
         // If we are here, we successfully updated user record.
-        if (auth.doLogin(login, password, session)) {
 
-            // Remember user login in cookie.
-            CookieManager.setCookie(request.getServletContext().getInitParameter("loginCookieName"), login,
-                Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
-
-            // Remove no longer needed attributes.
-            session.removeAttribute("user_password");
-            session.removeAttribute("user_confirm_password");
-
-            // TODO: need a better redirect.
-            response.sendRedirect("auctions.jsp");
+        // Login user.
+        if (!auth.doLogin(login, password, session)) {
+            user.getErrorBean().setProfileEditError(I18n.get("error.db"));
+            response.sendRedirect("profile.jsp");
+            return;
         }
+
+        // Remember user login in cookie.
+        CookieManager.setCookie(request.getServletContext().getInitParameter("loginCookieName"), login,
+            Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
+
+        // Remove the bean, which is used to pass form data between the view (profile.jsp)
+        // and the controller (ProfileServlet). We no longer need it as we are done.
+        session.removeAttribute("user_edit_bean");
+
+        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
+        response.sendRedirect("my_auctions.jsp");
     }
 }

@@ -22,7 +22,7 @@ may be combined with.
 
 package servlets;
 
-import business.User;
+import utils.User;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -34,7 +34,13 @@ import org.apache.commons.validator.routines.EmailValidator;
 
 import utils.Authenticator;
 import beans.UserBean;
-import business.UserHelper;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
+import utils.DatabaseManager;
+import utils.UserManager;
 import utils.I18n;
 
 /**
@@ -112,14 +118,39 @@ public class RegistrationServlet extends HttpServlet {
         }
         // Finished validating user input.
 
-        if (UserHelper.getUserByLogin(login) != null) {
+        if (UserManager.getUserByLogin(login) != null) {
             session.setAttribute("register_error", I18n.get("error.user_exists"));
             response.sendRedirect("register.jsp");
             return;
         }
 
         // Insert user record.
-        if (!UserHelper.insert(login, password, name, email)) {
+        UUID uuid = UUID.randomUUID();
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int insertResult = 0;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("insert into as_users " +
+                    "values (?, ?, md5(?), ?, ?, 1)");
+            pstmt.setString(1, uuid.toString());
+            pstmt.setString(2, login);
+            pstmt.setString(3, password);
+            pstmt.setString(4, name);
+            pstmt.setString(5, email);
+            insertResult = pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        if (1 != insertResult) {
             session.setAttribute("register_error", I18n.get("error.db"));
             response.sendRedirect("register.jsp");
             return;

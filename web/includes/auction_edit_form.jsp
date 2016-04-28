@@ -1,10 +1,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%@ page import="business.User, beans.AuctionBean" %>
+<%@ page import="utils.User, beans.AuctionBean" %>
 
 <%
-    // Obtain auction item.
+    // Obtain or create auction edit bean.
     AuctionBean bean = (AuctionBean) session.getAttribute("auction_edit_bean");
     if (bean == null) {
         User user = (User) session.getAttribute("user");

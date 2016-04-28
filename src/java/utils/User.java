@@ -1,4 +1,4 @@
-package business;
+package utils;
 
 import java.sql.*;
 import beans.ErrorBean;

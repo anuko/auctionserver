@@ -38,12 +38,23 @@ public class ErrorBean {
 
     private static final Logger Log = LoggerFactory.getLogger(ErrorBean.class);
 
+    private String profile_edit_error;   // Last error on profile.jsp
     private String auction_add_error;    // Last error on auction_add.jsp
     private String auction_edit_error;   // Last error on auction_edit.jsp
     private String auction_delete_error; // Last error on auction_delete.jsp
 
 
     // Getter and setter functions below.
+
+
+    public String getProfileEditError() {
+        return profile_edit_error;
+    }
+
+
+    public void setProfileEditError(String error) {
+        this.profile_edit_error = error;
+    }
 
 
     public String getAuctionAddError() {
