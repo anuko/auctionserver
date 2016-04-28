@@ -25,11 +25,11 @@
     
     <div class="form-group">
       <label for="name"><fmt:message key="label.name"/>:</label>
-      <input class="form-control" type="text" name="name" value="${bean.name}">
+      <input class="form-control" type="text" name="name" value="${bean.name}" disabled>
     </div>
     <div class="form-group">
         <label for="duration"><fmt:message key="label.duration"/>:</label>
-        <select class="form-control" name="duration">
+        <select class="form-control" name="duration" disabled>
 <c:forEach var="duration" items="${applicationScope.durations}">
           <option value="${duration.days}" <c:if test="${duration.days == bean.duration}">selected</c:if>>${duration.days}</option>
 </c:forEach>
@@ -37,7 +37,7 @@
     </div>
     <div class="form-group">
         <label for="currency"><fmt:message key="label.currency"/>:</label>
-        <select class="form-control" name="currency">
+        <select class="form-control" name="currency" disabled>
 <c:forEach var="currency" items="${applicationScope.currencies}">
           <option value="${currency.name}" <c:if test="${currency.name == bean.currency}">selected</c:if>>${currency.name}</option>
 </c:forEach>
@@ -45,15 +45,15 @@
     </div>
     <div class="form-group">
       <label for="reserve_price"><fmt:message key="label.reserve_price"/>:</label>
-      <input class="form-control" type="text" name="reserve_price" value="${bean.reservePrice}">
+      <input class="form-control" type="text" name="reserve_price" value="${bean.reservePrice}" disabled>
     </div>
     <div class="form-group">
       <label for="image_uri"><fmt:message key="label.image_uri"/>:</label>
-      <input class="form-control" type="text" name="image_uri" value="${bean.imageUri}">
+      <input class="form-control" type="text" name="image_uri" value="${bean.imageUri}" disabled>
     </div>
     <div class="form-group">
       <label for="description"><fmt:message key="label.description"/>:</label>
-      <textarea class="form-control" rows="10" name="description">${bean.description}</textarea>
+      <textarea class="form-control" rows="10" name="description" disabled>${bean.description}</textarea>
     </div>
     <div class="login_button"><input type="submit" name="btn_submit" value="<fmt:message key="button.delete"/>"></div>
   </div>
