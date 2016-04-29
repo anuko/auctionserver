@@ -1,6 +1,7 @@
 todo.txt
 nbproject/
 /src/database/*.sh
+/src/database/server_testing.sql
 /dist/
 /build/
 build.xml

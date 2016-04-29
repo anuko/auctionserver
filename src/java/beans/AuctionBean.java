@@ -61,6 +61,7 @@ public class AuctionBean {
 
     private String duration;
 
+
     public AuctionBean() {
     }
 
@@ -108,6 +109,49 @@ public class AuctionBean {
                 }
                 catch (ParseException e) {
                 }
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+    }
+
+
+    /**
+     * Initializes bean from the database.
+     *
+     * @param auctionUuid auction uuid.
+     */
+    public AuctionBean(String auctionUuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, description, image_uri, " +
+                    "created_timestamp, close_timestamp, currency, reserve_price, bids, current_price, approved, status " +
+                    "from as_auctions where uuid = ?");
+            pstmt.setString(1, auctionUuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                this.uuid = rs.getString(1);
+                this.origin = rs.getString(2);
+                this.seller_uuid = rs.getString(3);
+                this.name = rs.getString(4);
+                this.description = rs.getString(5);
+                this.image_uri = rs.getString(6);
+                this.created_timestamp = rs.getString(7);
+                this.close_timestamp = rs.getString(8);
+                this.currency = rs.getString(9);
+                this.reserve_price = rs.getString(10);
+                this.bids = rs.getString(11);
+                this.current_price = rs.getString(12);
+                this.approved = rs.getString(13);
+                this.status = rs.getString(14);
             }
         }
         catch (SQLException e) {

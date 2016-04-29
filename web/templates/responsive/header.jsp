@@ -37,6 +37,7 @@
         <li><a href="${ctx}/logout"><fmt:message key="menu.logout"/></a></li>
         <li><a href="${ctx}/auctions.jsp"><fmt:message key="menu.auctions"/></a></li>
         <li><a href="${ctx}/my_auctions.jsp"><fmt:message key="menu.my_auctions"/></a></li>
+        <li><a href="${ctx}/my_bids.jsp"><fmt:message key="menu.my_bids"/></a></li>
         <li><a href="${ctx}/profile.jsp"><fmt:message key="menu.profile"/></a></li>
 </c:if>
       </ul>
