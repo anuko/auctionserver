@@ -41,6 +41,7 @@ import utils.DatabaseManager;
 import beans.SiteBean;
 import utils.I18n;
 import utils.Authenticator;
+import utils.ProcessingThread;
 
 
 /**
@@ -58,6 +59,7 @@ public class ApplicationListener implements ServletContextListener {
     private static SiteBean site;
     private static I18n i18n;
     private static Authenticator auth;
+    Thread processingThread = new Thread(new ProcessingThread());
 
 
     /**
@@ -80,14 +82,15 @@ public class ApplicationListener implements ServletContextListener {
             conn = DatabaseManager.getConnection();
 
             // Obtain site info from the database.
-            pstmt = conn.prepareStatement("select uuid, name, uri, language, template from as_site_details");
+            pstmt = conn.prepareStatement("select uuid, name, uri, email, language, template from as_site_details");
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 site.setUuid(rs.getString(1));
                 site.setName(rs.getString(2));
                 site.setUri(rs.getString(3));
-                site.setLanguage(rs.getString(4));
-                site.setTemplate(rs.getString(5));
+                site.setEmail(rs.getString(4));
+                site.setLanguage(rs.getString(5));
+                site.setTemplate(rs.getString(6));
             }
 
             // Obtain supported currencies.
@@ -142,6 +145,9 @@ public class ApplicationListener implements ServletContextListener {
 
         // Initialize authenticator.
         auth = new Authenticator();
+
+        // Start processing thread.
+        processingThread.start();
     }
 
 
@@ -152,6 +158,7 @@ public class ApplicationListener implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        processingThread.interrupt();
         context = null;
         sdf = null;
         site = null;

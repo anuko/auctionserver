@@ -143,7 +143,7 @@ public class AuctionAddServlet extends HttpServlet {
             pstmt = conn.prepareStatement("insert into as_auctions " +
                 "set uuid = ?, origin = ?, seller_uuid = ?, name = ?, description = ?, " +
                 "image_uri = ?, created_timestamp = ?, close_timestamp = ?, currency = ?, " +
-                "reserve_price = ?, status = 1");
+                "reserve_price = ?");
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, ApplicationListener.getSiteBean().getUuid());
             pstmt.setString(3, user.getUuid());

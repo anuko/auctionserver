@@ -107,7 +107,7 @@ public class AuctionList {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, close_timestamp, approved " +
                     "from as_auctions " +
-                    "where seller_uuid = ? and close_timestamp > ? and status is not null " +
+                    "where seller_uuid = ? and close_timestamp > ? " +
                     "order by close_timestamp");
             pstmt.setString(1, userUuid);
             pstmt.setString(2, now);

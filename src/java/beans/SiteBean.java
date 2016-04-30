@@ -31,6 +31,7 @@ public class SiteBean {
     private String uuid;
     private String name;
     private String uri;
+    private String email;
     private String language;
     private String template;
 
@@ -60,6 +61,16 @@ public class SiteBean {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
     public String getLanguage() {
         return language;

@@ -6,11 +6,12 @@ CREATE TABLE as_site_details (
   uuid               CHAR(36)       NOT NULL,   # UUID identifying this auction site.
   name               VARCHAR(64)    NOT NULL,   # Name for this site.
   uri                VARCHAR(256),              # URI at which the server is available to its users.
+  email              VARCHAR(256),              # Email of site admin for notifications.
   language           VARCHAR(5),                # Language of the site, such as en, or pt_BR.
   template           VARCHAR(64)                # Website design template for the site to use.
 );
 
-insert into as_site_details values('bbbab125-1968-4149-89f6-47100f3b92bb', 'Test Auction Server', 'locoalhost:8081/auctionserver/', 'en', 'responsive');
+insert into as_site_details values('bbbab125-1968-4149-89f6-47100f3b92bb', 'Test Auction Server', 'locoalhost:8081/auctionserver/', NULL, 'en', 'responsive');
 
 
 # as_users contains users registered with this site.

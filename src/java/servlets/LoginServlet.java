@@ -74,18 +74,23 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
+        session.removeAttribute("user");
+
+        // Remove previous page error.
+        session.removeAttribute("login_error");
+
         // Collect parameters.
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
-        HttpSession session = request.getSession();
-        session.removeAttribute("user");
-        session.removeAttribute("uer_login");
-        session.removeAttribute("error");
+        // Set parameters in session for reuse in the view.
+        session.setAttribute("login_login", login);
+        session.setAttribute("login_password", password);
 
+        // Try to login user.
         if (!auth.doLogin(login, password, session)) {
-            session.setAttribute("user_login", login); // To pass to login.jsp to fill the login field (instead of info from cookie).
-            session.setAttribute("error", I18n.get("error.auth"));
+            session.setAttribute("login_error", I18n.get("error.auth"));
             response.sendRedirect("login.jsp");
             return;
         }
@@ -93,6 +98,10 @@ public class LoginServlet extends HttpServlet {
         // Remember user login in cookie.
         CookieManager.setCookie(request.getServletContext().getInitParameter("loginCookieName"), login,
             Integer.parseInt(request.getServletContext().getInitParameter("loginCookieAge")), request, response);
+
+        // Remove no lomnger needed session attributes, as we are done.
+        session.removeAttribute("login_login");
+        session.removeAttribute("login_password");
 
         // TODO: decide where to redirect better.
         response.sendRedirect("auctions.jsp");
