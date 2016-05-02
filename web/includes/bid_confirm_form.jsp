@@ -1,23 +1,22 @@
-<%@page import="utils.I18n"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="utils.User, beans.AuctionBean, beans.BidBean, java.util.UUID" %>
+<%@ page import="utils.User, utils.AuctionItem, beans.BidBean, java.util.UUID" %>
 
 <%
     // Obtain or create a bean to hold bid properties.
-    BidBean bean = (BidBean) session.getAttribute("bid_confirm_bean");
-    if (bean == null) {
-        AuctionBean auctionBean = new AuctionBean(request.getParameter("uuid"));
-        bean = new BidBean();
-        bean.setUuid(UUID.randomUUID().toString());
-        bean.setItemUuid(request.getParameter("uuid"));
-        bean.setSellerUuid(auctionBean.getSellerUuid());
-        bean.setItemName(auctionBean.getName());
-        bean.setCurrency(auctionBean.getCurrency());
-        bean.setAmount(request.getParameter("amount"));
-        session.setAttribute("bid_confirm_bean", bean);
+    BidBean bidBean = (BidBean) session.getAttribute("bid_confirm_bean");
+    if (bidBean == null) {
+        AuctionItem item = new AuctionItem(request.getParameter("item_uuid"));
+        bidBean = new BidBean();
+        bidBean.setUuid(UUID.randomUUID().toString());
+        bidBean.setItemUuid(request.getParameter("item_uuid"));
+        bidBean.setSellerUuid(item.getSellerUuid());
+        bidBean.setItemName(item.getName());
+        bidBean.setCurrency(item.getCurrency());
+        bidBean.setCurrentBid(item.getTopBid());
+        bidBean.setAmount(request.getParameter("amount"));
+        session.setAttribute("bid_confirm_bean", bidBean);
     }
-    pageContext.setAttribute("bean", bean);
+    pageContext.setAttribute("bean", bidBean);
 %>
 
 <!-- Error message, if any. -->

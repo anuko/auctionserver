@@ -22,31 +22,30 @@ may be combined with.
 
 package beans;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
- * Holds information about a bid.
+ * Holds information about a bid being added by user.
+ * An instance of this class is used to pass bid data between a view and a controller.
+ * All members are strings, as we need to display them in case of invalid input.
  *
  * @author Nik Okuntseff
  */
 public class BidBean {
 
-    private static final Logger Log = LoggerFactory.getLogger(BidBean.class);
-
-
-    private String uuid;
-    private String item_uuid;
+    private String uuid;         // UUID for this bid.
+    private String item_uuid;    // UUID of the item using is bidding on.
+    private String seller_uuid;  // Needed to prohibit bidding on own items.
     private String item_name;
-    private String seller_uuid;
     private String currency;
-    private String amount;
-    private String status;
+    private String current_bid;  // Current top bid on the item.
+    private String amount;       // Amount of this bid, must be greater then current bid.
 
 
     public BidBean() {
     }
+
+
+    // Getter and setter functions below.
 
 
     public String getUuid() {
@@ -56,16 +55,6 @@ public class BidBean {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-
-    public String getItemName() {
-        return item_name;
-    }
-
-
-    public void setItemName(String name) {
-        this.item_name = name;
     }
 
 
@@ -89,6 +78,16 @@ public class BidBean {
     }
 
 
+    public String getItemName() {
+        return item_name;
+    }
+
+
+    public void setItemName(String name) {
+        this.item_name = name;
+    }
+
+
     public String getCurrency() {
         return currency;
     }
@@ -99,6 +98,16 @@ public class BidBean {
     }
 
 
+    public String getCurrentBid() {
+        return current_bid;
+    }
+
+
+    public void setCurrentBid(String val) {
+        this.current_bid = val;
+    }
+
+
     public String getAmount() {
         return amount;
     }
@@ -106,15 +115,5 @@ public class BidBean {
 
     public void setAmount(String amount) {
         this.amount = amount;
-    }
-
-
-    public String getStatus() {
-        return status;
-    }
-
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }
