@@ -69,7 +69,8 @@ CREATE TABLE as_auctions (
   bids               INTEGER,                   # Number of bids on the item.
   current_price      NUMERIC(15,2),             # Current price of the auction.
   bid_uuid           CHAR(36),                  # Current high bid UUID.
-  approved           INTEGER,                   # Whether the auction is approved for site. 1 - approved, 0 - disapproved.
+  approved           INTEGER,                   # Whether the auction is approved for site. 1 - approved, 0 - disapproved, NULL - not reviewed.
+  processed          INTEGER,                   # Whether the auction is processed by this server. NULL and 0 mean "not processed".
   status             INTEGER,                   # Auction status. 1 - active, 0 - closed, NULL - deleted.
   PRIMARY KEY (uuid)
 );
@@ -86,7 +87,8 @@ CREATE TABLE as_bids (
   user_uuid          CHAR(36)       NOT NULL,   # User UUID who placed the bid.
   created_timestamp  CHAR(19)       NOT NULL,   # Bid creation timestamp in format like "2016-04-08 15:01:10".
   confirmed          INTEGER,                   # Whether the bid is confirmed by user.
-  status             INTEGER,                   # Status of the bid. -1 - tentatively processed, NULL - to be processed, 0 - lost, 1 - potentially winning.
+  processed          INTEGER,                   # Whether the bid is processed by this server.
+  status             INTEGER,                   # Status of the bid. 0 - lost, 1 - potentially winning.
   PRIMARY KEY (uuid)
 );
 # TODO: add indexes.
