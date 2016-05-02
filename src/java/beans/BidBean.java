@@ -53,8 +53,8 @@ public class BidBean {
     }
 
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUuid(String val) {
+        uuid = val;
     }
 
 
@@ -63,8 +63,8 @@ public class BidBean {
     }
 
 
-    public void setItemUuid(String item_uuid) {
-        this.item_uuid = item_uuid;
+    public void setItemUuid(String val) {
+        item_uuid = val;
     }
 
 
@@ -73,8 +73,8 @@ public class BidBean {
     }
 
 
-    public void setSellerUuid(String seller_uuid) {
-        this.seller_uuid = seller_uuid;
+    public void setSellerUuid(String val) {
+        seller_uuid = val;
     }
 
 
@@ -83,8 +83,8 @@ public class BidBean {
     }
 
 
-    public void setItemName(String name) {
-        this.item_name = name;
+    public void setItemName(String val) {
+        item_name = val;
     }
 
 
@@ -93,8 +93,8 @@ public class BidBean {
     }
 
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setCurrency(String val) {
+        currency = val;
     }
 
 
@@ -104,7 +104,7 @@ public class BidBean {
 
 
     public void setCurrentBid(String val) {
-        this.current_bid = val;
+        current_bid = val;
     }
 
 
@@ -113,7 +113,7 @@ public class BidBean {
     }
 
 
-    public void setAmount(String amount) {
-        this.amount = amount;
+    public void setAmount(String val) {
+        amount = val;
     }
 }

@@ -22,9 +22,6 @@ may be combined with.
 
 package beans;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Holds information about user errors on various pages in the application.
@@ -35,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author Nik Okuntseff
  */
 public class ErrorBean {
-
-    private static final Logger Log = LoggerFactory.getLogger(ErrorBean.class);
 
     private String profile_edit_error;   // Last error on profile.jsp
     private String auction_add_error;    // Last error on auction_add.jsp
@@ -52,8 +47,8 @@ public class ErrorBean {
     }
 
 
-    public void setProfileEditError(String error) {
-        this.profile_edit_error = error;
+    public void setProfileEditError(String val) {
+        profile_edit_error = val;
     }
 
 
@@ -62,8 +57,8 @@ public class ErrorBean {
     }
 
 
-    public void setAuctionAddError(String error) {
-        this.auction_add_error = error;
+    public void setAuctionAddError(String val) {
+        auction_add_error = val;
     }
 
 
@@ -72,8 +67,8 @@ public class ErrorBean {
     }
 
 
-    public void setAuctionEditError(String error) {
-        this.auction_edit_error = error;
+    public void setAuctionEditError(String val) {
+        auction_edit_error = val;
     }
 
 
@@ -82,8 +77,8 @@ public class ErrorBean {
     }
 
 
-    public void setAuctionDeleteError(String error) {
-        this.auction_delete_error = error;
+    public void setAuctionDeleteError(String val) {
+        auction_delete_error = val;
     }
 
 
@@ -92,7 +87,7 @@ public class ErrorBean {
     }
 
 
-    public void setBidConfirmError(String error) {
-        this.bid_confirm_error = error;
+    public void setBidConfirmError(String val) {
+        bid_confirm_error = val;
     }
 }
