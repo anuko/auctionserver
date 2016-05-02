@@ -1,3 +1,3 @@
 <%-- Set content part name and let template handle everything. --%>
-<% request.setAttribute("content_part", "/includes/auction_view.jsp"); %>
+<% request.setAttribute("content_part", "/includes/auction_form.jsp"); %>
 <jsp:include page="${template}"/>

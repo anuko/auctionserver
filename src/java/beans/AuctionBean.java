@@ -76,7 +76,7 @@ public class AuctionBean {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("select uuid, name, description, image_uri, " +
                 "created_timestamp, close_timestamp, currency, reserve_price " +
-                "from as_auctions where uuid = ? and seller_uuid = ?");
+                "from as_items where uuid = ? and seller_uuid = ?");
             pstmt.setString(1, auctionUuid);
             pstmt.setString(2, sellerUuid);
             rs = pstmt.executeQuery();
