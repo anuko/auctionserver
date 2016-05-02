@@ -7,11 +7,9 @@ CREATE TABLE as_site_details (
   name               VARCHAR(64)    NOT NULL,   # Name for this site.
   uri                VARCHAR(256),              # URI at which the server is available to its users.
   email              VARCHAR(256),              # Email of site admin for notifications.
-  language           VARCHAR(5),                # Language of the site, such as en, or pt_BR.
-  template           VARCHAR(64)                # Website design template for the site to use.
+  language           VARCHAR(5),                # Language of the site, such as en, or pt-BR.
+  template           VARCHAR(64)                # Website design template.
 );
-
-insert into as_site_details values('bbbab125-1968-4149-89f6-47100f3b92bb', 'Test Auction Server', 'locoalhost:8081/auctionserver/', NULL, 'en', 'responsive');
 
 
 # as_users contains users registered with this site.
@@ -21,6 +19,7 @@ CREATE TABLE as_users (
   password           CHAR(32)       NOT NULL,   # Password hash.
   name               VARCHAR(64)    NOT NULL,   # User name.
   email              VARCHAR(64)    NOT NULL,   # User email.
+  confirmed          INTEGER,                   # Whether user email is confirmed.
   status             INTEGER,                   # User status.
   PRIMARY KEY (login)
 );
@@ -69,6 +68,7 @@ CREATE TABLE as_auctions (
   reserve_price      NUMERIC(15,2),             # Reserve price of the auction.
   bids               INTEGER,                   # Number of bids on the item.
   current_price      NUMERIC(15,2),             # Current price of the auction.
+  bid_uuid           CHAR(36),                  # Current high bid UUID.
   approved           INTEGER,                   # Whether the auction is approved for site. 1 - approved, 0 - disapproved.
   status             INTEGER,                   # Auction status. 1 - active, 0 - closed, NULL - deleted.
   PRIMARY KEY (uuid)
@@ -85,8 +85,8 @@ CREATE TABLE as_bids (
   max_price          NUMERIC(15,2),             # Max price of the pid.
   user_uuid          CHAR(36)       NOT NULL,   # User UUID who placed the bid.
   created_timestamp  CHAR(19)       NOT NULL,   # Bid creation timestamp in format like "2016-04-08 15:01:10".
-  status             INTEGER,                   # Status of the bid.
+  confirmed          INTEGER,                   # Whether the bid is confirmed by user.
+  status             INTEGER,                   # Status of the bid. -1 - tentatively processed, NULL - to be processed, 0 - lost, 1 - potentially winning.
   PRIMARY KEY (uuid)
 );
 # TODO: add indexes.
-
