@@ -22,16 +22,14 @@ may be combined with.
 
 package servlets;
 
-import beans.AuctionBean;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormatSymbols;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,7 +42,6 @@ import utils.DatabaseManager;
 import utils.I18n;
 import utils.User;
 import beans.BidBean;
-import java.util.UUID;
 
 
 /**
@@ -115,6 +112,15 @@ public class BidConfirmServlet extends HttpServlet {
             response.sendRedirect("bid_confirm.jsp");
             return;
         }
+        float currentBid = 0.0f;
+        if (bean.getCurrentBid() != null) {
+            currentBid = Float.parseFloat(bean.getCurrentBid());
+        }
+        if (bid < 1.01 * currentBid) {
+            user.getErrorBean().setBidConfirmError(I18n.get("error.insufficient_bid"));
+            response.sendRedirect("bid_confirm.jsp");
+            return;
+        }
         if (bean.getSellerUuid().equals(user.getUuid())) {
             user.getErrorBean().setBidConfirmError(I18n.get("error.own_item"));
             response.sendRedirect("bid_confirm.jsp");
@@ -133,7 +139,7 @@ public class BidConfirmServlet extends HttpServlet {
         try {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("insert into as_bids " +
-                "set uuid = ?, origin = ?, item_uuid = ?, max_price = ?, " +
+                "set uuid = ?, origin = ?, item_uuid = ?, amount = ?, " +
                 "user_uuid = ?, created_timestamp = ?");
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, ApplicationListener.getSiteBean().getUuid());

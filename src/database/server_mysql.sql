@@ -83,7 +83,7 @@ CREATE TABLE as_bids (
   origin             CHAR(36),                  # Site UUID for the bid origin.
   item_uuid          CHAR(36)       NOT NULL,   # UUID of the auction item.
   item_origin        CHAR(36),                  # Site UUID for item origin.
-  max_price          NUMERIC(15,2),             # Max price of the pid.
+  amount             NUMERIC(15,2),             # Amount of the pid.
   user_uuid          CHAR(36)       NOT NULL,   # User UUID who placed the bid.
   created_timestamp  CHAR(19)       NOT NULL,   # Bid creation timestamp in format like "2016-04-08 15:01:10".
   confirmed          INTEGER,                   # Whether the bid is confirmed by user.
