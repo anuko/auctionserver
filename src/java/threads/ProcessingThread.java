@@ -175,7 +175,7 @@ public class ProcessingThread implements Runnable {
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 current_bid = rs.getFloat("top_bid");
-                bids = rs.getInt("bid");
+                bids = rs.getInt("bids");
                 current_bid_uuid = rs.getString("top_bid_uuid");
             }
 
