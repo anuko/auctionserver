@@ -24,7 +24,9 @@ package beans;
 
 
 /**
- * Holds information about a user.
+ * Holds information about a user being created or edited.
+ * An instance of this class is used to pass item data between a view and a controller.
+ * All members are strings, as we need to display them in case of invalid input.
  *
  * @author Nik Okuntseff
  */
@@ -50,8 +52,8 @@ public class UserBean {
     }
 
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUuid(String val) {
+        uuid = val;
     }
 
 
@@ -60,8 +62,8 @@ public class UserBean {
     }
 
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setLogin(String val) {
+        login = val;
     }
 
 
@@ -70,8 +72,8 @@ public class UserBean {
     }
 
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String val) {
+        password = val;
     }
 
 
@@ -80,8 +82,8 @@ public class UserBean {
     }
 
 
-    public void setConfirmPassword(String confirm_password) {
-        this.confirm_password = confirm_password;
+    public void setConfirmPassword(String val) {
+        confirm_password = val;
     }
 
 
@@ -90,8 +92,8 @@ public class UserBean {
     }
 
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String val) {
+        name = val;
     }
 
 
@@ -100,7 +102,7 @@ public class UserBean {
     }
 
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(String val) {
+        email = val;
     }
 }
