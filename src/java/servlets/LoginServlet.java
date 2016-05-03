@@ -22,6 +22,7 @@ may be combined with.
 
 package servlets;
 
+import listeners.ApplicationListener;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -105,15 +106,5 @@ public class LoginServlet extends HttpServlet {
 
         // TODO: decide where to redirect better.
         response.sendRedirect("auctions.jsp");
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
     }
 }
