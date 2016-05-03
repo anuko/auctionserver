@@ -41,7 +41,7 @@ import utils.DatabaseManager;
 import utils.Site;
 import utils.I18n;
 import utils.Authenticator;
-import utils.ProcessingThread;
+import threads.ProcessingThread;
 
 
 /**
