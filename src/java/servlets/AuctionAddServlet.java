@@ -22,7 +22,6 @@ may be combined with.
 
 package servlets;
 
-import utils.User;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,10 +38,13 @@ import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-import beans.AuctionBean;
-import utils.DatabaseManager;
 
+import listeners.ApplicationListener;
+import utils.User;
+import utils.DatabaseManager;
 import utils.I18n;
+import beans.AuctionBean;
+
 
 /**
  * Processes an auction add request.
@@ -140,7 +142,7 @@ public class AuctionAddServlet extends HttpServlet {
         int insertResult = 0;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("insert into as_auctions " +
+            pstmt = conn.prepareStatement("insert into as_items " +
                 "set uuid = ?, origin = ?, seller_uuid = ?, name = ?, description = ?, " +
                 "image_uri = ?, created_timestamp = ?, close_timestamp = ?, currency = ?, " +
                 "reserve_price = ?");

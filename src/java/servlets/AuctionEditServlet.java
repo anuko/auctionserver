@@ -22,6 +22,7 @@ may be combined with.
 
 package servlets;
 
+import listeners.ApplicationListener;
 import utils.User;
 import java.io.IOException;
 import java.sql.Connection;
@@ -147,7 +148,7 @@ public class AuctionEditServlet extends HttpServlet {
         String close_timestamp = ApplicationListener.getSimpleDateFormat().format(close_date);
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("update as_auctions " +
+            pstmt = conn.prepareStatement("update as_items " +
                 "set name = ?, close_timestamp = ?, currency = ?, reserve_price = ?, " +
                 "image_uri = ?, description = ? " +
                 "where uuid = ?");

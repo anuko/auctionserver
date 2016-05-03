@@ -23,6 +23,7 @@ may be combined with.
 package servlets;
 
 
+import listeners.ApplicationListener;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,7 +101,7 @@ public class BidConfirmServlet extends HttpServlet {
         }
         float bid = 0.0f;
         try {
-            DecimalFormatSymbols dfs = new DecimalFormatSymbols(ApplicationListener.getI18n().getLocale());
+            DecimalFormatSymbols dfs = new DecimalFormatSymbols(I18n.getLocale());
             if (dfs.getDecimalSeparator() == ',') {
                 // Replace comma with a dot so that parseFloat below works.
                 amount = amount.replace(',','.');

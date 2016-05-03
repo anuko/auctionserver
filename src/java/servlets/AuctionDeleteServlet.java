@@ -28,10 +28,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -95,7 +91,7 @@ public class AuctionDeleteServlet extends HttpServlet {
 
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("update as_auctions " +
+            pstmt = conn.prepareStatement("update as_items " +
                 "set status = null " +
                 "where uuid = ? and seller_uuid = ?");
             pstmt.setString(1, uuid);
