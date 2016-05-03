@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.validator.routines.EmailValidator;
 
+import listeners.ApplicationListener;
 import utils.Authenticator;
 import beans.UserBean;
 import java.sql.Connection;
@@ -135,7 +136,8 @@ public class RegistrationServlet extends HttpServlet {
         try {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("insert into as_users " +
-                    "values (?, ?, md5(?), ?, ?, 1)");
+                    "set uuid = ?, login = ?,  password = md5(?), " +
+                    "name = ?, email = ?, status = 1");
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, login);
             pstmt.setString(3, password);

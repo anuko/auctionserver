@@ -22,8 +22,6 @@ may be combined with.
 
 package servlets;
 
-import listeners.ApplicationListener;
-import utils.User;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,6 +39,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import listeners.ApplicationListener;
+import utils.User;
 import utils.DatabaseManager;
 import utils.I18n;
 import beans.AuctionBean;

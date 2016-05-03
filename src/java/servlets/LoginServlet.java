@@ -22,12 +22,13 @@ may be combined with.
 
 package servlets;
 
-import listeners.ApplicationListener;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import listeners.ApplicationListener;
 import utils.I18n;
 import utils.Authenticator;
 import utils.CookieManager;

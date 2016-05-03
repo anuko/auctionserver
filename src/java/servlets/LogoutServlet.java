@@ -22,7 +22,6 @@ may be combined with.
 
 package servlets;
 
-import listeners.ApplicationListener;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import listeners.ApplicationListener;
 import utils.Authenticator;
 
 

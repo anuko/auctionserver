@@ -22,7 +22,6 @@ may be combined with.
 
 package servlets;
 
-import beans.AuctionBean;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,8 +29,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import utils.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +36,9 @@ import java.sql.SQLException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import listeners.ApplicationListener;
+import utils.User;
 import utils.Authenticator;
 import utils.CookieManager;
 import utils.DatabaseManager;
