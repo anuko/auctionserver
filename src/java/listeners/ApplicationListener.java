@@ -20,7 +20,7 @@ may be combined with.
 */
 
 
-package servlets;
+package listeners;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import javax.servlet.jsp.jstl.core.Config;
 import utils.DatabaseManager;
 
-import beans.SiteBean;
+import utils.Site;
 import utils.I18n;
 import utils.Authenticator;
 import utils.ProcessingThread;
@@ -56,7 +56,7 @@ public class ApplicationListener implements ServletContextListener {
     private static final Logger Log = LoggerFactory.getLogger(ApplicationListener.class);
     private static ServletContext context;
     private static SimpleDateFormat sdf;
-    private static SiteBean site;
+    private static Site site;
     private static I18n i18n;
     private static Authenticator auth;
     Thread processingThread = new Thread(new ProcessingThread());
@@ -74,7 +74,7 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        site = new SiteBean();
+        site = new Site();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -211,9 +211,9 @@ public class ApplicationListener implements ServletContextListener {
     /**
      * Returns site bean.
      *
-     * @return initialized <code>SiteBean</code> object.
+     * @return initialized <code>Site</code> object.
      */
-    public static SiteBean getSiteBean() {
+    public static Site getSiteBean() {
         return site;
     }
 }
