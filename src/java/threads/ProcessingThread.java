@@ -189,17 +189,17 @@ public class ProcessingThread implements Runnable {
                 pstmt.executeUpdate();
 
                 // Notify seller.
-                NotificationManager.notifySellerNewBid(item_uuid, Float.toString(bid_amount));
+                NotificationManager.notifySellerNewBid(item_uuid, bid_amount);
 
                 // Notify losing bidder.
                 if (current_bid_uuid != null) {
-                    NotificationManager.notifyLosingBidder(current_bid_uuid, item_uuid, Float.toString(bid_amount));
+                    NotificationManager.notifyLosingBidder(current_bid_uuid, item_uuid, bid_amount);
                 }
 
-                // Notify currently winning bidder. // TODO: rename to notifyCurrentTopBidder
-                NotificationManager.notifyCurrentTopBidder(bid_uuid, item_uuid, Float.toString(bid_amount));
+                // Notify currently winning bidder.
+                NotificationManager.notifyCurrentTopBidder(bid_uuid, item_uuid, bid_amount);
             } else {
-                NotificationManager.notifyLosingBidder(bid_uuid, item_uuid, Float.toString(current_bid));
+                NotificationManager.notifyLosingBidder(bid_uuid, item_uuid, current_bid);
             }
         }
         catch (SQLException e) {
