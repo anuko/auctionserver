@@ -1,10 +1,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="utils.AuctionList, beans.AuctionBean, java.util.List" %>
+<%@ page import="utils.AuctionList, utils.AuctionItem, java.util.List" %>
 
 <%
     // Obtain auction items.
-    List<AuctionBean> items = AuctionList.getAuctions();
+    List<AuctionItem> items = AuctionList.getAuctions();
     pageContext.setAttribute("items", items);
 %>
 
@@ -32,7 +32,7 @@
     <tr>
         <td><a href="auction.jsp?uuid=${item.uuid}">${item.name}</a></td>
         <td>${item.bids}</a></td>
-        <td>${item.currentPrice}</a></td>
+        <td>${item.topBid}</a></td>
         <td>${item.closeTimestamp}</a></td>
     </tr>
 </c:forEach>

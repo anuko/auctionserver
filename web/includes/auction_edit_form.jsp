@@ -23,7 +23,6 @@
   <div class="login_form">
     <input type="hidden" name="uuid" value="${bean.uuid}">
     <input type="hidden" name="created_timestamp" value="${bean.createdTimestamp}">
-
     <div class="form-group">
       <label for="name"><fmt:message key="label.name"/>:</label>
       <input class="form-control" type="text" name="name" value="${bean.name}">

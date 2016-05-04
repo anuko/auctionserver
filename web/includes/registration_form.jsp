@@ -7,6 +7,10 @@
     UserBean bean = (UserBean) session.getAttribute("register_bean");
     if (bean == null) {
         bean = new UserBean();
+        String email = request.getParameter("email");
+        if (email != null) {
+            bean.setEmail(email);
+        }
         session.setAttribute("register_bean", bean);
     }
     pageContext.setAttribute("bean", bean);

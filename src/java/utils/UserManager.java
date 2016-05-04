@@ -71,4 +71,173 @@ public class UserManager {
         }
         return uuid;
     }
+
+
+    /**
+     * Retrieves user email.
+     *
+     * @param uuid user <code>UUID</code>
+     * @return user email or null if not found.
+     */
+    public static String getUserEmail(String user_uuid) {
+
+        String email = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select email " +
+                    "from as_users where uuid = ?");
+            pstmt.setString(1, user_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                email = rs.getString(1);
+            }
+         }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return email;
+    }
+
+
+    /**
+     * Retrieves first found user UUID by email.
+     *
+     * @param email user email.
+     * @return user <code>UUID</code> or null if not found.
+     */
+    public static String getUserUuid(String email) {
+
+        String uuid = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid " +
+                "from as_users where email = ? and status is not null");
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                uuid = rs.getString(1);
+            }
+         }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return uuid;
+    }
+
+
+    /**
+     * Retrieves seller email.
+     *
+     * @param item_uuid item <code>UUID</code>
+     * @return seller email or null if not found.
+     */
+    public static String getSellerEmail(String item_uuid) {
+
+        String email = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select i.seller_uuid, u.email " +
+                "from as_items i " +
+                "left join as_users u on (u.uuid = i.seller_uuid) " +
+                "where i.uuid = ?");
+            pstmt.setString(1, item_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                email = rs.getString(2);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return email;
+    }
+
+
+    /**
+     * Retrieves bidder email.
+     *
+     * @param bid_uuid bid<code>UUID</code>
+     * @return bidder email or null if not found.
+     */
+    public static String getBidderEmail(String bid_uuid) {
+
+        String email = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select b.user_uuid, u.email " +
+                "from as_bids b " +
+                "left join as_users u on (u.uuid = b.user_uuid) " +
+                "where b.uuid = ?");
+            pstmt.setString(1, bid_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                email = rs.getString(2);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return email;
+    }
+
+
+    /**
+     * Counts number of users with a specified email.
+     *
+     * @param email user email.
+     * @return number of logins with a specified email.
+     */
+    public static int countUsers(String email) {
+
+        int count = 0;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select count(*) from as_users " +
+                "where email = ? and status is not null");
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return count;
+    }
 }

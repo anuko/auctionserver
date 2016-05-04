@@ -1,12 +1,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="utils.User, utils.BidList, beans.BidBean, java.util.List" %>
+<%@ page import="utils.User, utils.BidList, utils.Bid, java.util.List" %>
 
 <%
     // Obtain auction items.
     User user = (User) session.getAttribute("user");
-    String userUuid = user.getUuid();
-    List<BidBean> items = BidList.getUserBids(userUuid);
+    List<Bid> items = BidList.getUserBids(user.getUuid());
     pageContext.setAttribute("items", items);
 %>
 
