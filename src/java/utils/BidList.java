@@ -22,17 +22,15 @@ may be combined with.
 
 package utils;
 
-import beans.BidBean;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import servlets.ApplicationListener;
 
 
 /**
@@ -48,31 +46,31 @@ public class BidList {
     /**
      * Obtain a list of bids for a specific user.
      */
-    public static List<BidBean> getUserBids(String userUuid) {
+    public static List<Bid> getUserBids(String user_uuid) {
 
-        List<BidBean> list = new ArrayList<BidBean>();
+        List<Bid> list = new ArrayList<Bid>();
 
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select b.uuid, b.item_uuid, a.name, a.currency, b.max_price, b.status " +
-                    "from as_bids b " +
-                    "left join as_auctions a on (a.uuid = b.item_uuid) " +
-                    "where b.user_uuid = ? " +
-                    "order by b.created_timestamp");
-            pstmt.setString(1, userUuid);
+            pstmt = conn.prepareStatement("select b.uuid, b.item_uuid, i.name, i.currency, b.amount, b.status " +
+                "from as_bids b " +
+                "left join as_items i on (i.uuid = b.item_uuid) " +
+                "where b.user_uuid = ? " +
+                "order by b.created_timestamp");
+            pstmt.setString(1, user_uuid);
             rs = pstmt.executeQuery();
             int count = 0;
             while (rs.next()) {
-                BidBean bid = new BidBean();
-                bid.setUuid(rs.getString(1));
-                bid.setItemUuid(rs.getString(2));
-                bid.setItemName(rs.getString(3));
-                bid.setCurrency(rs.getString(4));
-                bid.setAmount(rs.getString(5));
-                bid.setStatus(rs.getString(6));
+                Bid bid = new Bid();
+                bid.setUuid(rs.getString("uuid"));
+                bid.setItemUuid(rs.getString("item_uuid"));
+                bid.setItemName(rs.getString("name"));
+                bid.setCurrency(rs.getString("currency"));
+                bid.setAmount(rs.getFloat("amount"));
+                bid.setStatus(rs.getInt("status"));
                 list.add(bid);
                 // Limit output to 50 rows to keep things simple for now.
                 if (++count >= 50)
