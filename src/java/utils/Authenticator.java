@@ -56,7 +56,7 @@ public class Authenticator {
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select uuid from as_users where login = ? and password = md5(?) and status = 1");
+            pstmt = conn.prepareStatement("select uuid from as_users where login = ? and password = md5(?) and confirmed = 1 and status = 1");
             pstmt.setString(1, login);
             pstmt.setString(2, password);
             rs = pstmt.executeQuery();

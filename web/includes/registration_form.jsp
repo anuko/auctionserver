@@ -1,5 +1,5 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="anuko" uri="/WEB-INF/anuko.tld" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="beans.UserBean" %>
 
 <%
@@ -15,6 +15,14 @@
     }
     pageContext.setAttribute("bean", bean);
 %>
+
+<h1><fmt:message key="title.register"/></h1>
+<c:if test="${sessionScope.registration_successful != null}">
+    ${sessionScope.registration_successful}
+</c:if>
+
+<c:if test="${sessionScope.registration_successful == null}">
+<div class="page_hint"><fmt:message key="hint.register"/></div>
 
 <!-- Error message, if any. -->
 <div class="error">${sessionScope.register_error}</div>
@@ -46,3 +54,4 @@
     <div class="login_button"><input type="submit" name="btn_submit" value="<fmt:message key="button.submit"/>"></div>
   </div>
 </form>
+</c:if>

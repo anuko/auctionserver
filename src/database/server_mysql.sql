@@ -92,3 +92,12 @@ CREATE TABLE as_bids (
   PRIMARY KEY (uuid)
 );
 # TODO: add indexes.
+
+
+# as_tmp_refs contains temporary references for user confirmations and password resets.
+CREATE TABLE as_tmp_refs (
+  uuid               CHAR(36)       NOT NULL,   # UUID of the reference, our random code.
+  user_uuid          CHAR(36)       NOT NULL,   # User UUID for whom the reference is for.
+  created_timestamp  CHAR(19)       NOT NULL,   # Reference creation timestamp in format like "2016-04-18 15:00:00".
+  PRIMARY KEY (uuid)
+);

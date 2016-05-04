@@ -33,25 +33,28 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import listeners.ApplicationListener;
-import utils.Authenticator;
 import beans.UserBean;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.UUID;
 import utils.DatabaseManager;
 import utils.UserManager;
 import utils.I18n;
+import utils.NotificationManager;
+import utils.Site;
+
 
 /**
+ * Processes registration request.
  *
- * @author nik
+ * @author Nik Okuntseff
  */
 public class RegistrationServlet extends HttpServlet {
 
     private static final Logger Log = LoggerFactory.getLogger(RegistrationServlet.class);
-    private static final Authenticator auth = ApplicationListener.getAuthenticator();
 
 
     /**
@@ -74,8 +77,9 @@ public class RegistrationServlet extends HttpServlet {
             return;
         }
 
-        // Remove previous page error.
+        // Remove previous page error and success.
         session.removeAttribute("register_error");
+        session.removeAttribute("registration_successful");
 
         // Collect parameters.
         String login = request.getParameter("login");
@@ -125,25 +129,37 @@ public class RegistrationServlet extends HttpServlet {
             return;
         }
 
-        // Insert user record.
-        UUID uuid = UUID.randomUUID();
+        // Prepare data for insertion.
+        UUID user_uuid = UUID.randomUUID();
+        UUID random = UUID.randomUUID();
+        Date now = new Date();
+        String created_timestamp = ApplicationListener.getSimpleDateFormat().format(now);
+        String userUuid = user_uuid.toString();
+        String reference = random.toString(); // To create random URL for confirmation.
 
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        int insertResult = 0;
-
         try {
+            // Insert user record.
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("insert into as_users " +
-                    "set uuid = ?, login = ?,  password = md5(?), " +
-                    "name = ?, email = ?, status = 1");
-            pstmt.setString(1, uuid.toString());
+                "set uuid = ?, login = ?,  password = md5(?), " +
+                "name = ?, email = ?, status = 1");
+            pstmt.setString(1, userUuid);
             pstmt.setString(2, login);
             pstmt.setString(3, password);
             pstmt.setString(4, name);
             pstmt.setString(5, email);
-            insertResult = pstmt.executeUpdate();
+            pstmt.executeUpdate();
+
+            // Insert reference for user into as_tmp_refs table.
+            pstmt = conn.prepareStatement("insert into as_tmp_refs " +
+                "set uuid = ?, user_uuid = ?,  created_timestamp = ?");
+            pstmt.setString(1, reference);
+            pstmt.setString(2, userUuid);
+            pstmt.setString(3, created_timestamp);
+            pstmt.executeUpdate();
         }
         catch (SQLException e) {
             Log.error(e.getMessage(), e);
@@ -151,26 +167,18 @@ public class RegistrationServlet extends HttpServlet {
         finally {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
+        // If we are here, we successfully created a new user record and a reference.
 
-        if (1 != insertResult) {
-            session.setAttribute("register_error", I18n.get("error.db"));
-            response.sendRedirect("register.jsp");
-            return;
-        }
-
-        // If we are here, we successfully created a new user record.
-
-        // Login a new user.
-        if (!auth.doLogin(login, password, session)) {
-            session.setAttribute("register_error", I18n.get("error.db"));
-            return;
-        }
+        // Send a notification to user.
+        String uri = Site.getUri() + "/reg_confirm?ref=" + reference;
+        NotificationManager.notifyRegisteredUser(email, uri);
 
         // Remove the bean, which is used to pass form data between the view (register.jsp)
         // and the controller (RegistrationServlet). We no longer need it as we are done.
         session.removeAttribute("register_bean");
 
-        // Everything is good, normal exit by a redirect to my_auctions.jsp page.
-        response.sendRedirect("my_auctions.jsp");
+        // Everything is good. Set registration_successful attribute and redirect back to the view.
+        session.setAttribute("registration_successful", I18n.get("message.registration_successful"));
+        response.sendRedirect("register.jsp");
     }
 }

@@ -1,5 +1,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="anuko" uri="/WEB-INF/anuko.tld" %>
+
+<h1><fmt:message key="title.login"/></h1>
+<c:if test="${sessionScope.registration_confirmed != null}">
+    ${sessionScope.registration_confirmed}
+</c:if>
+<c:if test="${sessionScope.registration_confirmed == null}">
+<div class="page_hint"><fmt:message key="hint.login"/></div>
+</c:if>
 
 <!-- Error message, if any. -->
 <div class="error">${sessionScope.login_error}</div>
