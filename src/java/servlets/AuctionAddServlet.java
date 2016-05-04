@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import listeners.ApplicationListener;
+import utils.Site;
 import utils.User;
 import utils.DatabaseManager;
 import utils.I18n;
@@ -147,7 +148,7 @@ public class AuctionAddServlet extends HttpServlet {
                 "image_uri = ?, created_timestamp = ?, close_timestamp = ?, currency = ?, " +
                 "reserve_price = ?");
             pstmt.setString(1, uuid.toString());
-            pstmt.setString(2, ApplicationListener.getSiteBean().getUuid());
+            pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, user.getUuid());
             pstmt.setString(4, name);
             pstmt.setString(5, description);

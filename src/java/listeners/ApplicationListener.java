@@ -81,18 +81,6 @@ public class ApplicationListener implements ServletContextListener {
         try {
             conn = DatabaseManager.getConnection();
 
-            // Obtain site info from the database.
-            pstmt = conn.prepareStatement("select uuid, name, uri, email, language, template from as_site_details");
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                site.setUuid(rs.getString(1));
-                site.setName(rs.getString(2));
-                site.setUri(rs.getString(3));
-                site.setEmail(rs.getString(4));
-                site.setLanguage(rs.getString(5));
-                site.setTemplate(rs.getString(6));
-            }
-
             // Obtain supported currencies.
             List<HashMap<String,String>> currencies = new ArrayList<HashMap<String,String>>();
             pstmt = conn.prepareStatement("select currency from as_currencies order by ord_num");
@@ -124,8 +112,11 @@ public class ApplicationListener implements ServletContextListener {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
 
+        // Initialize Site object.
+        site = new Site();
+
         // Initialize I18n.
-        i18n = new I18n(site.getLanguage());
+        i18n = new I18n(Site.getLanguage());
 
         // Set locale and localization context for fmt taglib used in all jsp pages.
         Config.set(ApplicationListener.getServletContext(), Config.FMT_LOCALE, I18n.getLocale());
@@ -137,8 +128,8 @@ public class ApplicationListener implements ServletContextListener {
         */
 
         // Set template and style to use as application context attributes.
-        context.setAttribute("template", "/templates/"+site.getTemplate()+"/index.jsp");
-        context.setAttribute("style", context.getContextPath()+"/templates/"+site.getTemplate()+"/style.css");
+        context.setAttribute("template", "/templates/"+Site.getTemplate()+"/index.jsp");
+        context.setAttribute("style", context.getContextPath()+"/templates/"+Site.getTemplate()+"/style.css");
 
         // Set context path.
         context.setAttribute("ctx", context.getContextPath());
@@ -213,7 +204,7 @@ public class ApplicationListener implements ServletContextListener {
      *
      * @return initialized <code>Site</code> object.
      */
-    public static Site getSiteBean() {
+    public static Site getSite() {
         return site;
     }
 }

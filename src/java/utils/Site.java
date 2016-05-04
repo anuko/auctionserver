@@ -19,72 +19,102 @@ This license applies to this document only, not any other software that it
 may be combined with.
 */
 
-package beans;
+
+package utils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import javax.servlet.jsp.jstl.core.Config;
+import listeners.ApplicationListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Holds information about a site.
  *
  * @author Nik Okuntseff
  */
-public class SiteBean {
+public class Site {
 
-    private String uuid;
-    private String name;
-    private String uri;
-    private String email;
-    private String language;
-    private String template;
+    private static final Logger Log = LoggerFactory.getLogger(Site.class);
 
-    public SiteBean() {
+    private static String uuid;
+    private static String name;
+    private static String uri;
+    private static String email;
+    private static String language;
+    private static String template;
+
+
+    /**
+     * Initializes <code>Site</code> object with the details from the database.
+     */
+    public Site() {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+
+            // Obtain site info from the database.
+            pstmt = conn.prepareStatement("select uuid, name, uri, email, language, template from as_site_details");
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                uuid = rs.getString("uuid");
+                name = rs.getString("name");
+                uri = rs.getString("uri");
+                email = rs.getString("email");
+                language = rs.getString("language");
+                template = rs.getString("template");
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
     }
 
-    public String getUuid() {
+
+    // Getter methods below.
+
+
+    public static String getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
-    public String getName() {
+    public static String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getUri() {
+    public static String getUri() {
         return uri;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
 
-
-    public String getEmail() {
+    public static String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-
-    public String getLanguage() {
+    public static String getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
 
-    public String getTemplate() {
+    public static String getTemplate() {
         return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
     }
 }

@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import listeners.ApplicationListener;
+import utils.Site;
 import utils.DatabaseManager;
 import utils.I18n;
 import utils.User;
@@ -141,7 +142,7 @@ public class BidConfirmServlet extends HttpServlet {
                 "set uuid = ?, origin = ?, item_uuid = ?, amount = ?, " +
                 "user_uuid = ?, created_timestamp = ?");
             pstmt.setString(1, uuid.toString());
-            pstmt.setString(2, ApplicationListener.getSiteBean().getUuid());
+            pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, bean.getItemUuid());
             pstmt.setFloat(4, bid);
             pstmt.setString(5, user.getUuid());
