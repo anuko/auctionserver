@@ -37,7 +37,7 @@ public class BidBean {
     private String seller_uuid;  // Needed to prohibit bidding on own items.
     private String item_name;
     private String currency;
-    private String current_bid;  // Current top bid on the item.
+    private float current_bid;   // Current top bid on the item. Float because we never display it.
     private String amount;       // Amount of this bid, must be greater then current bid.
 
 
@@ -98,12 +98,12 @@ public class BidBean {
     }
 
 
-    public String getCurrentBid() {
+    public float getCurrentBid() {
         return current_bid;
     }
 
 
-    public void setCurrentBid(String val) {
+    public void setCurrentBid(float val) {
         current_bid = val;
     }
 

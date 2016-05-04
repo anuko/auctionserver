@@ -1,0 +1,272 @@
+/*
+Copyright Anuko International Ltd. (https://www.anuko.com)
+
+LIBERAL FREEWARE LICENSE: This source code document may be used
+by anyone for any purpose, and freely redistributed alone or in
+combination with other software, provided that the license is obeyed.
+
+There are only two ways to violate the license:
+
+1. To redistribute this code in source form, with the copyright notice or
+   license removed or altered. (Distributing in compiled forms without
+   embedded copyright notices is permitted).
+
+2. To redistribute modified versions of this code in *any* form
+   that bears insufficient indications that the modifications are
+   not the work of the original author(s).
+
+This license applies to this document only, not any other software that it
+may be combined with.
+*/
+
+
+package utils;
+
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+/**
+ * Holds information about a single auction item.
+ * An instance of this class represents an item in its entirety.
+ *
+ * @author Nik Okuntseff
+ */
+public class AuctionItem {
+
+    private static final Logger Log = LoggerFactory.getLogger(AuctionItem.class);
+
+    private String uuid;
+    private String origin;
+    private String seller_uuid;
+    private String name;
+    private String description;
+    private String image_uri;
+    private String created_timestamp;
+    private String close_timestamp;
+    private String currency;
+    private float reserve_price;
+    private int bids;
+    private float top_bid;
+    private String top_bid_uuid;
+    private int approved;
+    private int processed;
+    private int status;
+
+
+    public AuctionItem() {
+    }
+
+
+    /**
+     * Initializes an item from the database.
+     *
+     * @param auctionUuid auction uuid.
+     */
+    public AuctionItem(String auctionUuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, description, image_uri, " +
+                "created_timestamp, close_timestamp, currency, reserve_price, bids, top_bid, top_bid_uuid, approved, processed, status " +
+                "from as_items where uuid = ?");
+            pstmt.setString(1, auctionUuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                uuid = rs.getString("uuid");
+                origin = rs.getString("origin");
+                seller_uuid = rs.getString("seller_uuid");
+                name = rs.getString("name");
+                description = rs.getString("description");
+                image_uri = rs.getString("image_uri");
+                created_timestamp = rs.getString("created_timestamp");
+                close_timestamp = rs.getString("close_timestamp");
+                currency = rs.getString("currency");
+                reserve_price = rs.getFloat("reserve_price");
+                bids = rs.getInt("bids");
+                top_bid = rs.getFloat("top_bid");
+                top_bid_uuid = rs.getString("top_bid_uuid");
+                approved = rs.getInt("approved");
+                processed = rs.getInt("processed");
+                status = rs.getInt("status");
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+    }
+
+
+    // Getter and setter functions below.
+
+
+    public String getUuid() {
+        return uuid;
+    }
+
+
+    public void setUuid(String val) {
+        uuid = val;
+    }
+
+
+    public String getOrigin() {
+        return origin;
+    }
+
+
+    public void setOrigin(String val) {
+        origin = val;
+    }
+
+
+    public String getSellerUuid() {
+        return seller_uuid;
+    }
+
+
+    public void setSellerUuid(String val) {
+        seller_uuid = val;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public void setName(String val) {
+        name = val;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public void setDescription(String val) {
+        description = val;
+    }
+
+
+    public String getImageUri() {
+        return image_uri;
+    }
+
+
+    public void setImageUri(String val) {
+        image_uri = val;
+    }
+
+
+    public String getCreatedTimestamp() {
+        return created_timestamp;
+    }
+
+
+    public void setCreatedTimestamp(String val) {
+        created_timestamp = val;
+    }
+
+
+    public String getCloseTimestamp() {
+        return close_timestamp;
+    }
+
+
+    public void setCloseTimestamp(String val) {
+        close_timestamp = val;
+    }
+
+
+    public String getCurrency() {
+        return currency;
+    }
+
+
+    public void setCurrency(String val) {
+        currency = val;
+    }
+
+
+    public float getReservePrice() {
+        return reserve_price;
+    }
+
+
+    public void setReservePrice(float val) {
+        reserve_price = val;
+    }
+
+
+    public int getBids() {
+        return bids;
+    }
+
+
+    public void setBids(int val) {
+        bids = val;
+    }
+
+
+    public float getTopBid() {
+        return top_bid;
+    }
+
+
+    public void setTopBid(float val) {
+        top_bid = val;
+    }
+
+
+    public String getTopBidUuid() {
+        return top_bid_uuid;
+    }
+
+
+    public void setTopBidUuid(String val) {
+        top_bid_uuid = val;
+    }
+
+
+    public int getApproved() {
+        return approved;
+    }
+
+
+    public void setApproved(int val) {
+        approved = val;
+    }
+
+
+    public int getProcessed() {
+        return processed;
+    }
+
+
+    public void setProcessed(int val) {
+        processed = val;
+    }
+
+
+    public int getStatus() {
+        return status;
+    }
+
+
+    public void setStatus(int val) {
+        status = val;
+    }
+}

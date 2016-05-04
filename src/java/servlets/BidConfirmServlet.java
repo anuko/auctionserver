@@ -114,10 +114,7 @@ public class BidConfirmServlet extends HttpServlet {
             response.sendRedirect("bid_confirm.jsp");
             return;
         }
-        float currentBid = 0.0f;
-        if (bean.getCurrentBid() != null) {
-            currentBid = Float.parseFloat(bean.getCurrentBid());
-        }
+        float currentBid = bean.getCurrentBid();
         if (bid < 1.01 * currentBid) {
             user.getErrorBean().setBidConfirmError(I18n.get("error.insufficient_bid"));
             response.sendRedirect("bid_confirm.jsp");
