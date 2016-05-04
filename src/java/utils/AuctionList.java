@@ -22,7 +22,7 @@ may be combined with.
 
 package utils;
 
-import beans.AuctionBean;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,11 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import servlets.ApplicationListener;
+
+import listeners.ApplicationListener;
 
 
 /**
- * Obtains a list of auctions.
+ * Obtains a list of auction items.
  *
  * @author Nik Okuntseff
  */
@@ -48,9 +49,9 @@ public class AuctionList {
     /**
      * Obtain a list of auction items.
      */
-    public static List<AuctionBean> getAuctions() {
+    public static List<AuctionItem> getAuctions() {
 
-        List<AuctionBean> list = new ArrayList<AuctionBean>();
+        List<AuctionItem> list = new ArrayList<AuctionItem>();
 
         Date now_date = new Date();
         String now = ApplicationListener.getSimpleDateFormat().format(now_date);
@@ -60,21 +61,24 @@ public class AuctionList {
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, close_timestamp " +
-                    "from as_auctions " +
+            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, " +
+                    "top_bid, bids, close_timestamp " +
+                    "from as_items " +
                     "where close_timestamp > ? and approved = 1 " +
                     "order by close_timestamp");
             pstmt.setString(1, now);
             rs = pstmt.executeQuery();
             int count = 0;
             while (rs.next()) {
-                AuctionBean auction = new AuctionBean();
-                auction.setUuid(rs.getString(1));
-                auction.setOrigin(rs.getString(2));
-                auction.setSellerUuid(rs.getString(3));
-                auction.setName(rs.getString(4));
-                auction.setCloseTimestamp(rs.getString(5));
-                list.add(auction);
+                AuctionItem item = new AuctionItem();
+                item.setUuid(rs.getString("uuid"));
+                item.setOrigin(rs.getString("origin"));
+                item.setSellerUuid(rs.getString("seller_uuid"));
+                item.setName(rs.getString("name"));
+                item.setTopBid(rs.getFloat("top_bid"));
+                item.setBids(rs.getInt("bids"));
+                item.setCloseTimestamp(rs.getString("close_timestamp"));
+                list.add(item);
                 // Limit output to 50 rows to keep things simple for now.
                 if (++count >= 50)
                     break;
@@ -93,9 +97,9 @@ public class AuctionList {
     /**
      * Obtain a list of auction items for a specific user.
      */
-    public static List<AuctionBean> getUserAuctions(String userUuid) {
+    public static List<AuctionItem> getUserAuctions(String user_uuid) {
 
-        List<AuctionBean> list = new ArrayList<AuctionBean>();
+        List<AuctionItem> list = new ArrayList<AuctionItem>();
 
         Date now_date = new Date();
         String now = ApplicationListener.getSimpleDateFormat().format(now_date);
@@ -105,23 +109,26 @@ public class AuctionList {
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, close_timestamp, approved " +
-                    "from as_auctions " +
+            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, " +
+                    "top_bid, bids, close_timestamp, approved " +
+                    "from as_items " +
                     "where seller_uuid = ? and close_timestamp > ? " +
                     "order by close_timestamp");
-            pstmt.setString(1, userUuid);
+            pstmt.setString(1, user_uuid);
             pstmt.setString(2, now);
             rs = pstmt.executeQuery();
             int count = 0;
             while (rs.next()) {
-                AuctionBean auction = new AuctionBean();
-                auction.setUuid(rs.getString(1));
-                auction.setOrigin(rs.getString(2));
-                auction.setSellerUuid(rs.getString(3));
-                auction.setName(rs.getString(4));
-                auction.setCloseTimestamp(rs.getString(5));
-                auction.setApproved(rs.getString(6));
-                list.add(auction);
+                AuctionItem item = new AuctionItem();
+                item.setUuid(rs.getString("uuid"));
+                item.setOrigin(rs.getString("origin"));
+                item.setSellerUuid(rs.getString("seller_uuid"));
+                item.setName(rs.getString("name"));
+                item.setTopBid(rs.getFloat("top_bid"));
+                item.setBids(rs.getInt("bids"));
+                item.setCloseTimestamp(rs.getString("close_timestamp"));
+                item.setApproved(rs.getInt("approved"));
+                list.add(item);
                 // Limit output to 50 rows to keep things simple for now.
                 if (++count >= 50)
                     break;
