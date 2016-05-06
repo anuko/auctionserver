@@ -380,4 +380,70 @@ public class NotificationManager {
             System.out.println("Exception when sending notification email... " + e.getMessage());
         }
     }
+
+
+    /**
+     * Notifies user how to reset their password.
+     *
+     * @param email user email.
+     * @param uri random uri for user to click on.
+     */
+    public static void notifyUserResetPassword(String email, String uri) {
+
+        // Prepare message body.
+        String msg_subject = I18n.get("email.reset_password.subject");
+        String msg_body = I18n.get("email.reset_password.body", uri);
+
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            Session mailSession = (Session) envCtx.lookup("mail/Session");
+            String from = "noreply@anuko.com";
+
+            MimeMessage msg = new MimeMessage(mailSession);
+            msg.setFrom(new InternetAddress(from, I18n.get("title")));
+
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, true));
+            msg.setSubject(msg_subject, "UTF-8");
+            msg.setText(msg_body, "UTF-8");
+            Transport.send(msg);
+        }
+        catch (Exception e) {
+            // Do nothing, this is not expected.
+            System.out.println("Exception when sending notification email... " + e.getMessage());
+        }
+    }
+
+
+    /**
+     * Notifies user to confirm their bid.
+     *
+     * @param email user email.
+     * @param uri random uri for user to click on.
+     */
+    public static void notifyUserConfirmBid(String email, String item_name, String uri) {
+
+        // Prepare message body.
+        String msg_subject = I18n.get("email.confirm_bid.subject");
+        String msg_body = I18n.get("email.confirm_bid.body", item_name, uri);
+
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            Session mailSession = (Session) envCtx.lookup("mail/Session");
+            String from = "noreply@anuko.com";
+
+            MimeMessage msg = new MimeMessage(mailSession);
+            msg.setFrom(new InternetAddress(from, I18n.get("title")));
+
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, true));
+            msg.setSubject(msg_subject, "UTF-8");
+            msg.setText(msg_body, "UTF-8");
+            Transport.send(msg);
+        }
+        catch (Exception e) {
+            // Do nothing, this is not expected.
+            System.out.println("Exception when sending notification email... " + e.getMessage());
+        }
+    }
 }

@@ -40,6 +40,7 @@ import utils.Site;
 import utils.UserManager;
 import utils.BidManager;
 import utils.AuctionItem;
+import utils.NotificationManager;
 
 
 /**
@@ -119,12 +120,26 @@ public class FrameServlet extends HttpServlet {
         // Finished validating parameters.
 
         // Do normal processing. This needs to be refactored to improve usability.
+        // This is currently work in progress...
 
         // If user does not exist, display a message that a registration is required.
         int userCount = UserManager.countUsers(email);
         if (userCount == 0) {
+            /*
             String register_uri = Site.getUri() + "/register.jsp?email=" + email;
             String message = I18n.get("message.registration_required", register_uri);
+            session.setAttribute("frame_message", message);
+            response.sendRedirect("frame_success.jsp");
+            return; */
+
+            String user_uuid = UserManager.createUnconfirmedUser(email);
+            String reference = UserManager.createUnconfirmedUserReference(user_uuid);
+            BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
+            // Send a notification to user.
+            String uri = Site.getUri() + "/user_confirm?ref=" + reference;
+            NotificationManager.notifyUserConfirmBid(email, item.getName(), uri);
+
+            String message = I18n.get("message.check_mailbox");
             session.setAttribute("frame_message", message);
             response.sendRedirect("frame_success.jsp");
             return;
@@ -140,7 +155,7 @@ public class FrameServlet extends HttpServlet {
         }
 
         // Single login found. Create an unconfirmed bid and ask user to confirm it.
-        String user_uuid = UserManager.getUserUuid(email);
+        String user_uuid = UserManager.getUserByEmail(email);
         BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
         String login_uri = Site.getUri() + "/login.jsp";
         String message = I18n.get("message.confirm_bid", login_uri);

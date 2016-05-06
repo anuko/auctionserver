@@ -26,6 +26,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.UUID;
+import listeners.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +63,7 @@ public class UserManager {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                uuid = rs.getString(1);
+                uuid = rs.getString("uuid");
             }
         }
         catch (SQLException e) {
@@ -93,7 +96,7 @@ public class UserManager {
             pstmt.setString(1, user_uuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                email = rs.getString(1);
+                email = rs.getString("email");
             }
          }
         catch (SQLException e) {
@@ -103,39 +106,6 @@ public class UserManager {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
         return email;
-    }
-
-
-    /**
-     * Retrieves first found user UUID by email.
-     *
-     * @param email user email.
-     * @return user <code>UUID</code> or null if not found.
-     */
-    public static String getUserUuid(String email) {
-
-        String uuid = null;
-
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select uuid " +
-                "from as_users where email = ? and status is not null");
-            pstmt.setString(1, email);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                uuid = rs.getString(1);
-            }
-         }
-        catch (SQLException e) {
-            Log.error(e.getMessage(), e);
-        }
-        finally {
-            DatabaseManager.closeConnection(rs, pstmt, conn);
-        }
-        return uuid;
     }
 
 
@@ -161,7 +131,7 @@ public class UserManager {
             pstmt.setString(1, item_uuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                email = rs.getString(2);
+                email = rs.getString("email");
             }
         }
         catch (SQLException e) {
@@ -196,7 +166,7 @@ public class UserManager {
             pstmt.setString(1, bid_uuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                email = rs.getString(2);
+                email = rs.getString("email");
             }
         }
         catch (SQLException e) {
@@ -239,5 +209,126 @@ public class UserManager {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
         return count;
+    }
+
+
+    /**
+     * Retrieves first found user UUID for a specified email.
+     *
+     * @param email user email
+     * @return user UUID <code>String</code> or null if not found.
+     */
+    public static String getUserByEmail(String email) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String uuid = null;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid from as_users where email = ? and (status = 1 or status = 0)");
+            pstmt.setString(1, email);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                uuid = rs.getString("uuid");
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return uuid;
+    }
+
+
+    /**
+     * Creates an unconfirmed user with email as login and a random password.
+     *
+     * @param email user email
+     * @return user UUID <code>String</code>.
+     */
+    public static String createUnconfirmedUser(String email) {
+
+        // Prepare data for insertion.
+        String user_uuid = UUID.randomUUID().toString();
+        String password = UUID.randomUUID().toString();
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean userCreated = false;
+        try {
+            // Insert user record.
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("insert into as_users " +
+                "set uuid = ?, login = ?,  password = md5(?), " +
+                "name = ?, email = ?, status = 1");
+            pstmt.setString(1, user_uuid);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.setString(4, I18n.get("label.user"));
+            pstmt.setString(5, email);
+            int rows = pstmt.executeUpdate();
+            userCreated = (1 == rows);
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        if (!userCreated)
+            return null;
+
+        return user_uuid;
+    }
+
+
+    /**
+     * Creates a reference that can be used to confirm a user.
+     *
+     * @param user_uuid user UUID.
+     * @return reference UUID <code>String</code>.
+     */
+    public static String createUnconfirmedUserReference(String user_uuid) {
+
+        // Prepare data for insertion.
+        UUID random = UUID.randomUUID();
+        Date now = new Date();
+        String created_timestamp = ApplicationListener.getSimpleDateFormat().format(now);
+        String reference = random.toString(); // To create random URL for confirmation.
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean refCreated = false;
+        try {
+            // Insert user record.
+            conn = DatabaseManager.getConnection();
+
+            // Insert reference for user into as_tmp_refs table.
+            pstmt = conn.prepareStatement("insert into as_tmp_refs " +
+                "set uuid = ?, user_uuid = ?,  created_timestamp = ?");
+            pstmt.setString(1, reference);
+            pstmt.setString(2, user_uuid);
+            pstmt.setString(3, created_timestamp);
+            int rows = pstmt.executeUpdate();
+            refCreated = (1 == rows);
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        if (!refCreated)
+            return null;
+
+        return reference;
     }
 }

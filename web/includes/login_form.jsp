@@ -3,10 +3,10 @@
 <%@ taglib prefix="anuko" uri="/WEB-INF/anuko.tld" %>
 
 <h1><fmt:message key="title.login"/></h1>
-<c:if test="${sessionScope.registration_confirmed != null}">
-    ${sessionScope.registration_confirmed}
+<c:if test="${sessionScope.login_hint != null}">
+    ${sessionScope.login_hint}
 </c:if>
-<c:if test="${sessionScope.registration_confirmed == null}">
+<c:if test="${sessionScope.login_hint == null}">
 <div class="page_hint"><fmt:message key="hint.login"/></div>
 </c:if>
 
@@ -23,6 +23,9 @@
     <div class="form-group">
       <label for="password"><fmt:message key="label.password"/>:</label>
       <input class="form-control" type="password" name="password" value="${sessionScope.login_password}">
+    </div>
+    <div class="form-group">
+      <a href="password_reset.jsp"><fmt:message key="form.login.forgot_password"/></a>
     </div>
     <div class="login_button"><input type="submit" name="btn_login" value="<fmt:message key="button.login"/>"></div>
   </div>

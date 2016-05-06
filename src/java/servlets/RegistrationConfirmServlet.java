@@ -70,7 +70,7 @@ public class RegistrationConfirmServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        session.removeAttribute("registration_confirmed");
+        session.removeAttribute("login_hint");
 
         // Collect parameters.
         String reference = request.getParameter("ref");
@@ -124,10 +124,10 @@ public class RegistrationConfirmServlet extends HttpServlet {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
 
-        // If we confirme a user, set an attribute to display as a hint on the login page.
+        // If we confirmed a user, set an attribute to display as a hint on the login page.
         if (userConfirmed) {
-            // Everything is good. Set registration_confirmed attribute.
-            session.setAttribute("registration_confirmed", I18n.get("message.registration_confirmed"));
+            // Everything is good. Set login_hint attribute.
+            session.setAttribute("login_hint", I18n.get("message.registration_confirmed"));
         }
 
         // Redirect to the login page,
