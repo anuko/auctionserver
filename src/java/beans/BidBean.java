@@ -22,6 +22,16 @@ may be combined with.
 
 package beans;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import utils.DatabaseManager;
+import utils.I18n;
+
 
 /**
  * Holds information about a bid being added by user.
@@ -31,6 +41,8 @@ package beans;
  * @author Nik Okuntseff
  */
 public class BidBean {
+
+    private static final Logger Log = LoggerFactory.getLogger(BidBean.class);
 
     private String uuid;         // UUID for this bid.
     private String item_uuid;    // UUID of the item using is bidding on.
@@ -42,6 +54,46 @@ public class BidBean {
 
 
     public BidBean() {
+    }
+
+
+   /**
+     * Initializes bean from the database.
+     *
+     * @param bidUuid bid uuid.
+     * @param bidderUuid bidder uuid.
+     */
+    public BidBean(String bidUuid, String bidderUuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select b.uuid, b.item_uuid, i.seller_uuid, i.name, " +
+                "i.currency, i.top_bid, b.amount " +
+                "from as_bids b " +
+                "left join as_items i on (b.item_uuid = i.uuid) " +
+                "where b.uuid = ? and b.user_uuid = ?");
+            pstmt.setString(1, bidUuid);
+            pstmt.setString(2, bidderUuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                uuid = rs.getString("uuid");
+                item_uuid = rs.getString("item_uuid");
+                seller_uuid = rs.getString("seller_uuid");
+                item_name = rs.getString("name");
+                currency = rs.getString("currency");
+                current_bid = rs.getFloat("top_bid");
+                amount = String.format(I18n.getLocale(), "%.2f", rs.getFloat("amount"));
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
     }
 
 

@@ -42,6 +42,8 @@ public class Bid {
     private String item_name;
     private String currency;
     private float amount;
+    private int confirmed;
+    private int processed;
     private int status;
 
 
@@ -98,6 +100,26 @@ public class Bid {
     }
 
 
+    public int getConfirmed() {
+        return confirmed;
+    }
+
+
+    public void setConfirmed(int val) {
+        confirmed = val;
+    }
+
+
+    public int getProcessed() {
+        return processed;
+    }
+
+
+    public void setProcessed(int val) {
+        processed = val;
+    }
+
+
     public int getStatus() {
         return status;
     }
@@ -105,5 +127,24 @@ public class Bid {
 
     public void setStatus(int val) {
         status = val;
+    }
+
+
+    public String getState() {
+        if (confirmed == 0)
+            return I18n.get("state.unconfirmed");
+        if (processed == 0)
+            return I18n.get("state.unprocessed");
+        if (status == 0)
+            return I18n.get("state.lost");
+        if (status == 1)
+            return I18n.get("state.winning");
+
+        return I18n.get("state.unknown");
+    }
+
+
+    public String getBidString() {
+        return currency + " " + String.format(I18n.getLocale(), "%.2f", amount);
     }
 }

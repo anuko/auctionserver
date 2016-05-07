@@ -331,4 +331,50 @@ public class UserManager {
 
         return reference;
     }
+
+
+    /**
+     * Creates a reference that can be used to confirm a bid for user.
+     *
+     * @param user_uuid user UUID.
+     * @param bid_uuid bid UUID.
+     * @return reference UUID <code>String</code>.
+     */
+    public static String createUnconfirmedBidReference(String user_uuid, String bid_uuid) {
+
+        // Prepare data for insertion.
+        String reference = UUID.randomUUID().toString();
+        Date now = new Date();
+        String created_timestamp = ApplicationListener.getSimpleDateFormat().format(now);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean refCreated = false;
+        try {
+            // Insert user record.
+            conn = DatabaseManager.getConnection();
+
+            // Insert reference for user into as_tmp_refs table.
+            pstmt = conn.prepareStatement("insert into as_tmp_refs " +
+                "set uuid = ?, user_uuid = ?,  bid_uuid = ?, created_timestamp = ?");
+            pstmt.setString(1, reference);
+            pstmt.setString(2, user_uuid);
+            pstmt.setString(3, bid_uuid);
+            pstmt.setString(4, created_timestamp);
+            int rows = pstmt.executeUpdate();
+            refCreated = (1 == rows);
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        if (!refCreated)
+            return null;
+
+        return reference;
+    }
 }

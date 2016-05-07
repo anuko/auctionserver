@@ -24,6 +24,7 @@
         <url-pattern>/auction_add.jsp</url-pattern>
         <url-pattern>/auction_edit.jsp</url-pattern>
         <url-pattern>/my_auctions.jsp</url-pattern>
+        <url-pattern>/my_bids.jsp</url-pattern>
         <url-pattern>/bid_confirm.jsp</url-pattern>
     </filter-mapping>
     <servlet>

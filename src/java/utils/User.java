@@ -56,10 +56,53 @@ public class User
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                this.uuid = rs.getString(1);
+                this.uuid = rs.getString("uuid");
                 this.login = login;
-                this.name = rs.getString(2);
-                this.email = rs.getString(3);
+                this.name = rs.getString("name");
+                this.email = rs.getString("email");
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+
+        error_bean = new ErrorBean();
+    }
+
+
+    /**
+     * Creates a User object from user bid.
+     * This constructor is used to auto-login a user who is confirming a frame bid.
+     *
+     * @param bid_uuid bid uuid.
+     */
+    public User(String bid_uuid)
+    {
+        String user_uuid = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select user_uuid from as_bids where uuid = ?");
+            pstmt.setString(1, bid_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                user_uuid = rs.getString("user_uuid");
+            }
+            pstmt = conn.prepareStatement("select uuid, login, name, email from as_users where uuid = ?");
+            pstmt.setString(1, user_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                this.uuid = rs.getString("uuid");
+                this.login = rs.getString("login");
+                this.name = rs.getString("name");
+                this.email = rs.getString("email");
             }
         }
         catch (SQLException e) {

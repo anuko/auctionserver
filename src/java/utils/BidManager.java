@@ -79,10 +79,11 @@ public class BidManager {
      * @param user_uuid user <code>UUID</code>.
      * @param item_uuid item <code>UUID</code>.
      * @param bid_amount bid amount.
+     * @return bid UUID.
      */
-    public static void createUnconfirmedBid(String user_uuid, String item_uuid, float bid_amount) {
+    public static String createUnconfirmedBid(String user_uuid, String item_uuid, float bid_amount) {
 
-        UUID uuid = UUID.randomUUID();
+        String bidUuid = UUID.randomUUID().toString();
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -96,7 +97,7 @@ public class BidManager {
             pstmt = conn.prepareStatement("insert into as_bids " +
                 "set uuid = ?, origin = ?, item_uuid = ?, amount = ?, " +
                 "user_uuid = ?, created_timestamp = ?"); // confirmed flag will be NULL by default
-            pstmt.setString(1, uuid.toString());
+            pstmt.setString(1, bidUuid);
             pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, item_uuid);
             pstmt.setFloat(4, bid_amount);
@@ -110,5 +111,6 @@ public class BidManager {
         finally {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
+        return bidUuid;
     }
 }

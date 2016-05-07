@@ -23,7 +23,7 @@
     <tr>
         <th><fmt:message key="label.item"/></th>
         <th><fmt:message key="label.bids"/></th>
-        <th><fmt:message key="label.price"/></th>
+        <th><fmt:message key="label.current_bid"/></th>
         <th><fmt:message key="label.end"/></th>
     </tr>
     </thead>
@@ -32,7 +32,7 @@
     <tr>
         <td><a href="auction.jsp?uuid=${item.uuid}">${item.name}</a></td>
         <td>${item.bids}</a></td>
-        <td>${item.topBid}</a></td>
+        <td>${item.topBidString}</a></td>
         <td>${item.closeTimestamp}</a></td>
     </tr>
 </c:forEach>

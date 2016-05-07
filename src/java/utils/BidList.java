@@ -55,7 +55,8 @@ public class BidList {
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select b.uuid, b.item_uuid, i.name, i.currency, b.amount, b.status " +
+            pstmt = conn.prepareStatement("select b.uuid, b.item_uuid, i.name, i.currency, " +
+                "b.amount, b.confirmed, b.processed, b.status " +
                 "from as_bids b " +
                 "left join as_items i on (i.uuid = b.item_uuid) " +
                 "where b.user_uuid = ? " +
@@ -70,6 +71,8 @@ public class BidList {
                 bid.setItemName(rs.getString("name"));
                 bid.setCurrency(rs.getString("currency"));
                 bid.setAmount(rs.getFloat("amount"));
+                bid.setConfirmed(rs.getInt("confirmed"));
+                bid.setProcessed(rs.getInt("processed"));
                 bid.setStatus(rs.getInt("status"));
                 list.add(bid);
                 // Limit output to 50 rows to keep things simple for now.

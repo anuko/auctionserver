@@ -95,6 +95,10 @@ public class FrameServlet extends HttpServlet {
         }
         float bid = 0.0f;
         try {
+            if (amount.startsWith(item.getCurrency())) {
+                // Strip currency.
+                amount = amount.substring(item.getCurrency().length());
+            }
             DecimalFormatSymbols dfs = new DecimalFormatSymbols(I18n.getLocale());
             if (dfs.getDecimalSeparator() == ',') {
                 // Replace comma with a dot so that parseFloat below works.
@@ -119,48 +123,51 @@ public class FrameServlet extends HttpServlet {
         }
         // Finished validating parameters.
 
-        // Do normal processing. This needs to be refactored to improve usability.
-        // This is currently work in progress...
-
-        // If user does not exist, display a message that a registration is required.
+        // Determine number of users with provided email.
         int userCount = UserManager.countUsers(email);
-        if (userCount == 0) {
-            /*
-            String register_uri = Site.getUri() + "/register.jsp?email=" + email;
-            String message = I18n.get("message.registration_required", register_uri);
-            session.setAttribute("frame_message", message);
-            response.sendRedirect("frame_success.jsp");
-            return; */
+        // TODO: what to do if some of users are unconfirmed?
 
-            String user_uuid = UserManager.createUnconfirmedUser(email);
-            String reference = UserManager.createUnconfirmedUserReference(user_uuid);
-            BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
-            // Send a notification to user.
-            String uri = Site.getUri() + "/user_confirm?ref=" + reference;
-            NotificationManager.notifyUserConfirmBid(email, item.getName(), uri);
-
-            String message = I18n.get("message.check_mailbox");
-            session.setAttribute("frame_message", message);
-            response.sendRedirect("frame_success.jsp");
-            return;
-        }
-
-        // If we have multiple registered users for a single email, simply tell them to login and manage bids there.
+        // Do things differently depending on how many logins we have.
         if (userCount > 1) {
+            // We have multiple registered users for a single email.
+            // Display message in the view telling user to login and manage bids on the server.
             String login_uri = Site.getUri() + "/login.jsp";
             String message = I18n.get("message.multiple_logins", email, login_uri);
             session.setAttribute("frame_message", message);
             response.sendRedirect("frame_success.jsp");
             return;
         }
+        if (userCount == 1) {
+            // Single login found. Create an unconfirmed bid and ask user to confirm it.
+            String user_uuid = UserManager.getUserByEmail(email);
+            String bid_uuid = BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
+            String reference = UserManager.createUnconfirmedBidReference(user_uuid, bid_uuid);
 
-        // Single login found. Create an unconfirmed bid and ask user to confirm it.
-        String user_uuid = UserManager.getUserByEmail(email);
-        BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
-        String login_uri = Site.getUri() + "/login.jsp";
-        String message = I18n.get("message.confirm_bid", login_uri);
-        session.setAttribute("frame_message", message);
-        response.sendRedirect("frame_success.jsp");
-        // TODO: handle the above better, perhaps to the bid_confirm.jsp or something.
+            // Send a notification to user.
+            String uri = Site.getUri() + "/frame_bid_confirm.jsp?ref=" + reference;
+            NotificationManager.notifyUserConfirmBid(email, item.getName(), uri);
+
+            // Display message.
+            String message = I18n.get("message.check_mailbox");
+            session.setAttribute("frame_message", message);
+            response.sendRedirect("frame_success.jsp");
+            return;
+        }
+        if (userCount == 0) {
+            // User does not exist. Create one with an aunconfirmed bid, and explain how to confirm.
+            String user_uuid = UserManager.createUnconfirmedUser(email);
+            String bid_uuid = BidManager.createUnconfirmedBid(user_uuid, uuid, bid);
+            String reference = UserManager.createUnconfirmedBidReference(user_uuid, bid_uuid);
+
+            // Send a notification to user.
+            String uri = Site.getUri() + "/welcome.jsp?ref=" + reference;
+            NotificationManager.notifyUserConfirmBid(email, item.getName(), uri);
+
+            // Display message.
+            String message = I18n.get("message.check_mailbox");
+            session.setAttribute("frame_message", message);
+            response.sendRedirect("frame_success.jsp");
+            return;
+        }
     }
 }

@@ -19,7 +19,7 @@ CREATE TABLE as_users (
   password           CHAR(32)       NOT NULL,   # Password hash.
   name               VARCHAR(64)    NOT NULL,   # User name.
   email              VARCHAR(64)    NOT NULL,   # User email.
-  confirmed          INTEGER,                   # Whether user email is confirmed.
+  confirmed          INTEGER        NOT NULL DEFAULT 0, # Whether user email is confirmed.
   status             INTEGER,                   # User status.
   PRIMARY KEY (login)
 );
@@ -70,7 +70,7 @@ CREATE TABLE as_items (
   top_bid            NUMERIC(15,2),             # Current top bid for the item.
   top_bid_uuid       CHAR(36),                  # Current top bid UUID.
   approved           INTEGER,                   # Whether the item is approved for site. 1 - approved, 0 - disapproved, NULL - not reviewed.
-  processed          INTEGER,                   # Whether the item is processed by this server. NULL and 0 mean "not processed".
+  processed          INTEGER        NOT NULL DEFAULT 0, # Whether the item is processed by this server. 0 means "not processed".
   status             INTEGER,                   # Auction status. 1 - active, 0 - closed, NULL - deleted.
   PRIMARY KEY (uuid)
 );
@@ -87,7 +87,7 @@ CREATE TABLE as_bids (
   user_uuid          CHAR(36)       NOT NULL,   # User UUID who placed the bid.
   created_timestamp  CHAR(19)       NOT NULL,   # Bid creation timestamp in format like "2016-04-08 15:01:10".
   confirmed          INTEGER,                   # Whether the bid is confirmed by user.
-  processed          INTEGER,                   # Whether the bid is processed by this server.
+  processed          INTEGER        NOT NULL DEFAULT 0, # Whether the bid is processed by this server.
   status             INTEGER,                   # Status of the bid. 0 - lost, 1 - potentially winning.
   PRIMARY KEY (uuid)
 );
@@ -98,6 +98,7 @@ CREATE TABLE as_bids (
 CREATE TABLE as_tmp_refs (
   uuid               CHAR(36)       NOT NULL,   # UUID of the reference, our random code.
   user_uuid          CHAR(36)       NOT NULL,   # User UUID for whom the reference is for.
+  bid_uuid           CHAR(36),                  # Bid UUID for which the reference is for.
   created_timestamp  CHAR(19)       NOT NULL,   # Reference creation timestamp in format like "2016-04-18 15:00:00".
   PRIMARY KEY (uuid)
 );

@@ -23,10 +23,10 @@
     <thead>
     <tr>
         <th><fmt:message key="label.item"/></th>
-        <th><fmt:message key="label.approved"/></th>
         <th><fmt:message key="label.bids"/></th>
-        <th><fmt:message key="label.price"/></th>
+        <th><fmt:message key="label.current_bid"/></th>
         <th><fmt:message key="label.end"/></th>
+        <th><fmt:message key="label.state"/></th>
         <th><fmt:message key="label.edit"/></th>
         <th><fmt:message key="label.delete"/></th>
     </tr>
@@ -35,10 +35,10 @@
 <c:forEach var="item" items="${pageScope.items}">
     <tr>
         <td><a href="auction_edit.jsp?uuid=${item.uuid}">${item.name}</a></td>
-        <td>${item.approved}</a></td>
         <td>${item.bids}</a></td>
-        <td>${item.topBid}</a></td>
+        <td>${item.topBidString}</a></td>
         <td>${item.closeTimestamp}</a></td>
+        <td>${item.state}</a></td>
         <td><a href="auction_edit.jsp?uuid=${item.uuid}"><fmt:message key="label.edit"/></a></td>
         <td><a href="auction_delete.jsp?uuid=${item.uuid}"><fmt:message key="label.delete"/></a></td>
     </tr>

@@ -54,6 +54,7 @@ public class AuctionItem {
     private int bids;
     private float top_bid;
     private String top_bid_uuid;
+    private String top_bidder_name;
     private int approved;
     private int processed;
     private int status;
@@ -75,9 +76,13 @@ public class AuctionItem {
         ResultSet rs = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, description, image_uri, " +
-                "created_timestamp, close_timestamp, currency, reserve_price, bids, top_bid, top_bid_uuid, approved, processed, status " +
-                "from as_items where uuid = ?");
+            pstmt = conn.prepareStatement("select i.uuid, i.origin, i.seller_uuid, i.name, i.description, i.image_uri, " +
+                "i.created_timestamp, i.close_timestamp, i.currency, i.reserve_price, i.bids, i.top_bid, " +
+                "i.top_bid_uuid, i.approved, i.processed, i.status, u.name as username " +
+                "from as_items i " +
+                "left join as_bids b on (b.uuid = i.top_bid_uuid) " +
+                "left join as_users u on (u.uuid = b.user_uuid) " +
+                "where i.uuid = ?");
             pstmt.setString(1, auctionUuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -94,6 +99,7 @@ public class AuctionItem {
                 bids = rs.getInt("bids");
                 top_bid = rs.getFloat("top_bid");
                 top_bid_uuid = rs.getString("top_bid_uuid");
+                top_bidder_name = rs.getString("username");
                 approved = rs.getInt("approved");
                 processed = rs.getInt("processed");
                 status = rs.getInt("status");
@@ -241,6 +247,16 @@ public class AuctionItem {
     }
 
 
+    public String getTopBidderName() {
+        return top_bidder_name;
+    }
+
+
+    public void setTopBidderName(String val) {
+        top_bidder_name = val;
+    }
+
+
     public int getApproved() {
         return approved;
     }
@@ -268,5 +284,31 @@ public class AuctionItem {
 
     public void setStatus(int val) {
         status = val;
+    }
+
+
+    public String getTopBidString() {
+        return currency + " " + String.format(I18n.getLocale(), "%.2f", top_bid);
+    }
+
+    public String getTopBidWithBidder() {
+        String currentBidString = getTopBidString();
+        if (bids > 0)
+            currentBidString += " (" + getTopBidderName() + ")";
+        return currentBidString;
+    }
+
+
+    public String getState() {
+        if (processed == 0 && approved == 0)
+            return I18n.get("state.auction.pending");
+        if (processed == 1 && approved == 0)
+            return I18n.get("state.auction.disapproved");
+        if (status == 1)
+            return I18n.get("state.auction.active");
+        if (status == 0)
+            return I18n.get("state.auction.closed");
+
+        return I18n.get("state.unknown");
     }
 }

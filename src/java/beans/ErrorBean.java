@@ -38,6 +38,7 @@ public class ErrorBean {
     private String auction_edit_error;   // Last error on auction_edit.jsp
     private String auction_delete_error; // Last error on auction_delete.jsp
     private String bid_confirm_error;    // Last error on bid_confirm.jsp
+    private String bid_edit_error;       // Last error on bid_edit.jsp
 
     // Getter and setter functions below.
 
@@ -89,5 +90,15 @@ public class ErrorBean {
 
     public void setBidConfirmError(String val) {
         bid_confirm_error = val;
+    }
+
+
+    public String getBidEditError() {
+        return bid_edit_error;
+    }
+
+
+    public void setBidEditError(String val) {
+        bid_edit_error = val;
     }
 }

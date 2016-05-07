@@ -89,7 +89,7 @@ public class ProcessingThread implements Runnable {
         try {
             conn = DatabaseManager.getConnection();
 
-            pstmt = conn.prepareStatement("select uuid, name from as_items where approved is null and processed is null");
+            pstmt = conn.prepareStatement("select uuid, name from as_items where approved is null and processed = 0");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 String uuid = rs.getString(1);
@@ -117,7 +117,7 @@ public class ProcessingThread implements Runnable {
         try {
             conn = DatabaseManager.getConnection();
 
-            pstmt = conn.prepareStatement("select uuid from as_bids where processed is null");
+            pstmt = conn.prepareStatement("select uuid from as_bids where confirmed = 1 and processed = 0");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 String uuid = rs.getString(1);
