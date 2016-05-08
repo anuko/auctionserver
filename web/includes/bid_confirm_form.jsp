@@ -19,6 +19,9 @@
     pageContext.setAttribute("bean", bidBean);
 %>
 
+<h1><fmt:message key="title.bid_confirm"/></h1>
+<div class="page_hint"><fmt:message key="hint.bid_confirm"/></div>
+
 <!-- Error message, if any. -->
 <div class="error">${user.errorBean.bidConfirmError}</div>
 

@@ -140,7 +140,7 @@ public class BidConfirmServlet extends HttpServlet {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("insert into as_bids " +
                 "set uuid = ?, origin = ?, item_uuid = ?, amount = ?, " +
-                "user_uuid = ?, created_timestamp = ?");
+                "user_uuid = ?, created_timestamp = ?, confirmed = 1");
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, bean.getItemUuid());
