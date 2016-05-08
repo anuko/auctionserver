@@ -12,14 +12,8 @@
 <img class="img-responsive center-block" src="${item.imageUri}" alt="${item.name}">
 <h3><fmt:message key="label.description"/></h3>
 <p>${item.description}</p>
-
-<c:if test="${item.bids > 0}">
-<fmt:message key="label.top_bid"/>: ${item.currency} ${item.topBid}
-</c:if>
-<c:if test="${item.bids == null}">
-<fmt:message key="label.currency"/>: ${item.currency}
-</c:if>
-
+<p><fmt:message key="label.time_remaining"/>: ${item.closeTimestamp}</p>
+<p><fmt:message key="label.current_bid"/>: ${item.topBidWithBidder}</p>
 
 <!-- Bid form. -->
 <form action="bid_confirm.jsp" method="post">

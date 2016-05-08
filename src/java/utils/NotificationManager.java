@@ -76,7 +76,7 @@ public class NotificationManager {
             // Do nothing, this is not expected.
             System.out.println("Exception when sending notification email... " + e.getMessage());
         }
-
+/*
         // Update processed flag.
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -93,7 +93,7 @@ public class NotificationManager {
         }
         finally {
             DatabaseManager.closeConnection(rs, pstmt, conn);
-        }
+        }*/
     }
 
 
@@ -113,7 +113,8 @@ public class NotificationManager {
         // Prepare message body.
         String msg_subject = I18n.get("email.new_bid.subject");
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-        String msg_body = I18n.get("email.new_bid.body", item.getName(), localizedBid);
+        String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
+        String msg_body = I18n.get("email.new_bid.body", item.getName(), itemUri, localizedBid);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -153,8 +154,9 @@ public class NotificationManager {
 
         // Prepare message body.
         String msg_subject = I18n.get("email.lost_bid.subject");
+        String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-        String msg_body = I18n.get("email.lost_bid.body", item.getName(), localizedBid);
+        String msg_body = I18n.get("email.lost_bid.body", item.getName(), localizedBid, item.getCloseTimestamp(), itemUri);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -193,8 +195,9 @@ public class NotificationManager {
 
        // Prepare message body.
         String msg_subject = I18n.get("email.top_bid.subject");
+        String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-        String msg_body = I18n.get("email.top_bid.body", item.getName(), localizedBid);
+        String msg_body = I18n.get("email.top_bid.body", item.getName(), itemUri, localizedBid);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");

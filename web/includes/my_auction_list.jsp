@@ -9,9 +9,7 @@
     pageContext.setAttribute("items", items);
 %>
 
-<form action="auction_add.jsp">
-  <div class="login_button"><input type="submit" value="<fmt:message key="button.add_auction"/>"></div>
-</form>
+<h1><fmt:message key="title.my_auctions"/></h1>
 
 <c:if test="${items.size() == 0}">
     <fmt:message key="error.no_auctions"/>
@@ -46,3 +44,7 @@
     </tbody>
 </table>
 </c:if>
+
+<form action="auction_add.jsp">
+  <div class="login_button"><input type="submit" value="<fmt:message key="button.add_auction"/>"></div>
+</form>

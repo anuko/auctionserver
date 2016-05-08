@@ -42,6 +42,7 @@ import utils.DatabaseManager;
 import utils.I18n;
 import utils.User;
 import beans.FrameBidConfirmBean;
+import utils.BidManager;
 
 
 /**
@@ -78,7 +79,6 @@ public class FrameBidConfirmServlet extends HttpServlet {
         session.removeAttribute("frame_bid_confirm_error");
 
         // Collect parameters.
-        String uuid = request.getParameter("uuid");
         String amount = request.getParameter("amount");
 
         // Set parameters in session for reuse in the view.
@@ -112,6 +112,7 @@ public class FrameBidConfirmServlet extends HttpServlet {
         }
         // Finished validating user input.
 
+        String bidUuid = bean.getUuid();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -122,8 +123,11 @@ public class FrameBidConfirmServlet extends HttpServlet {
                 "set amount = ?, confirmed = 1, processed = 0 " +
                 "where uuid = ?");
             pstmt.setFloat(1, bid);
-            pstmt.setString(2, bean.getUuid());
-            pstmt.executeUpdate();
+            pstmt.setString(2, bidUuid);
+            int rows = pstmt.executeUpdate();
+            if (1 == rows) {
+                BidManager.processNewBid(bidUuid);
+            }
         }
         catch (SQLException e) {
             Log.error(e.getMessage(), e);

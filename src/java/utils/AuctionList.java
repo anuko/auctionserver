@@ -64,7 +64,7 @@ public class AuctionList {
             pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, " +
                     "top_bid, bids, close_timestamp, currency " +
                     "from as_items " +
-                    "where close_timestamp > ? and approved = 1 " +
+                    "where close_timestamp > ? and approved = 1 and status = 1 " +
                     "order by close_timestamp");
             pstmt.setString(1, now);
             rs = pstmt.executeQuery();
@@ -113,7 +113,7 @@ public class AuctionList {
             pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, " +
                     "top_bid, bids, close_timestamp, currency, approved " +
                     "from as_items " +
-                    "where seller_uuid = ? and close_timestamp > ? " +
+                    "where seller_uuid = ? and close_timestamp > ? and status is not null " +
                     "order by close_timestamp");
             pstmt.setString(1, user_uuid);
             pstmt.setString(2, now);

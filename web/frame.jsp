@@ -7,9 +7,11 @@
     pageContext.setAttribute("item", item);
 %>
 
+<div align="center">
 <!-- Auction view. -->
 <h1>${item.name}</h1>
-<img class="center-block" src="${item.imageUri}" alt="${item.name}" width="300px">
+<a href="${item.itemUri}"><img class="center-block" src="${item.imageUri}" alt="${item.name}" width="300px"></a>
+
 <h3><fmt:message key="label.description"/></h3>
 <p>${item.description}</p>
 
@@ -44,3 +46,5 @@
       </tr>
       </form>
     </table>
+  </div>
+</div>

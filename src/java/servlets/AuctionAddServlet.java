@@ -45,6 +45,7 @@ import utils.User;
 import utils.DatabaseManager;
 import utils.I18n;
 import beans.AuctionBean;
+import utils.NotificationManager;
 
 
 /**
@@ -126,7 +127,7 @@ public class AuctionAddServlet extends HttpServlet {
         }
         // Finished validating user input.
 
-        UUID uuid = UUID.randomUUID();
+        String itemUuid = UUID.randomUUID().toString();
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -146,8 +147,8 @@ public class AuctionAddServlet extends HttpServlet {
             pstmt = conn.prepareStatement("insert into as_items " +
                 "set uuid = ?, origin = ?, seller_uuid = ?, name = ?, description = ?, " +
                 "image_uri = ?, created_timestamp = ?, close_timestamp = ?, currency = ?, " +
-                "reserve_price = ?");
-            pstmt.setString(1, uuid.toString());
+                "reserve_price = ?, processed = 1, status = 1");
+            pstmt.setString(1, itemUuid);
             pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, user.getUuid());
             pstmt.setString(4, name);
@@ -171,6 +172,9 @@ public class AuctionAddServlet extends HttpServlet {
            response.sendRedirect("auction_add.jsp");
            return;
         }
+
+        user.incrementAuctionCount();
+        NotificationManager.notifyAdminNewAuction(itemUuid);
 
         // Remove the bean, which is used to pass form data between the view (auction_add.jsp)
         // and the controller (AuctionAddServlet). We no longer need it as we are done.

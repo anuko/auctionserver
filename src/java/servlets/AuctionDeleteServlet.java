@@ -106,6 +106,8 @@ public class AuctionDeleteServlet extends HttpServlet {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
 
+        user.decrementAuctionCount();
+
         // Remove the bean, which is used to pass form data between the view (auction_delete.jsp)
         // and the controller (AuctionDeleteServlet). We no longer need it as we are done.
         session.removeAttribute("auction_delete_bean");

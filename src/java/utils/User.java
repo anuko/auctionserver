@@ -21,6 +21,8 @@ public class User
     private String email;               // User email.
 
     private ErrorBean error_bean;       // User errors.
+    private int numAuctions;            // Number of user auctions.
+    private int numBids;                // NUmber of user bids.
 
     /**
      * Default constructor.
@@ -40,10 +42,6 @@ public class User
      */
     public User(String login, String password)
     {
-        // Set id and login to default values.
-        this.uuid = null;
-        this.login = null;
-
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -56,10 +54,26 @@ public class User
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                this.uuid = rs.getString("uuid");
+                uuid = rs.getString("uuid");
                 this.login = login;
-                this.name = rs.getString("name");
-                this.email = rs.getString("email");
+                name = rs.getString("name");
+                email = rs.getString("email");
+            }
+            if (uuid != null) {
+                pstmt = conn.prepareStatement("select count(*) from as_items where seller_uuid = ? and status is not null");
+                pstmt.setString(1, uuid);
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    numAuctions = rs.getInt(1);
+                }
+            }
+            if (uuid != null) {
+                pstmt = conn.prepareStatement("select count(*) from as_bids where user_uuid = ?");
+                pstmt.setString(1, uuid);
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    numBids = rs.getInt(1);
+                }
             }
         }
         catch (SQLException e) {
@@ -99,10 +113,26 @@ public class User
             pstmt.setString(1, user_uuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                this.uuid = rs.getString("uuid");
-                this.login = rs.getString("login");
-                this.name = rs.getString("name");
-                this.email = rs.getString("email");
+                uuid = rs.getString("uuid");
+                login = rs.getString("login");
+                name = rs.getString("name");
+                email = rs.getString("email");
+            }
+            if (uuid != null) {
+                pstmt = conn.prepareStatement("select count(*) from as_items where seller_uuid = ? and status is not null");
+                pstmt.setString(1, uuid);
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    numAuctions = rs.getInt(1);
+                }
+            }
+            if (uuid != null) {
+                pstmt = conn.prepareStatement("select count(*) from as_bids where user_uuid = ?");
+                pstmt.setString(1, uuid);
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    numBids = rs.getInt(1);
+                }
             }
         }
         catch (SQLException e) {
@@ -135,6 +165,35 @@ public class User
         return email;
     }
 
+    public boolean hasAuctions()
+    {
+        return (numAuctions > 0);
+    }
+
+    public boolean hasBids()
+    {
+        return (numBids > 0);
+    }
+
+    public void incrementAuctionCount()
+    {
+        numAuctions++;
+    }
+
+    public void decrementAuctionCount()
+    {
+        numAuctions--;
+    }
+
+    public void incrementBidCount()
+    {
+        numBids++;
+    }
+
+    public void decrmentBidCount()
+    {
+        numBids--;
+    }
 
     public ErrorBean getErrorBean()
     {

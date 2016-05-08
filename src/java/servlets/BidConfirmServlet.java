@@ -45,6 +45,7 @@ import utils.DatabaseManager;
 import utils.I18n;
 import utils.User;
 import beans.BidBean;
+import utils.BidManager;
 
 
 /**
@@ -89,7 +90,7 @@ public class BidConfirmServlet extends HttpServlet {
         user.getErrorBean().setBidConfirmError(null);
 
         // Collect parameters.
-        String uuid = request.getParameter("uuid");
+        String bidUuid = request.getParameter("uuid");
         String amount = request.getParameter("amount");
 
         // Set parameters in session for reuse in the view.
@@ -141,13 +142,16 @@ public class BidConfirmServlet extends HttpServlet {
             pstmt = conn.prepareStatement("insert into as_bids " +
                 "set uuid = ?, origin = ?, item_uuid = ?, amount = ?, " +
                 "user_uuid = ?, created_timestamp = ?, confirmed = 1");
-            pstmt.setString(1, uuid.toString());
+            pstmt.setString(1, bidUuid);
             pstmt.setString(2, Site.getUuid());
             pstmt.setString(3, bean.getItemUuid());
             pstmt.setFloat(4, bid);
             pstmt.setString(5, user.getUuid());
             pstmt.setString(6, created_timestamp);
             insertResult = pstmt.executeUpdate();
+            if (1 == insertResult) {
+                BidManager.processNewBid(bidUuid);
+            }
         }
         catch (SQLException e) {
             Log.error(e.getMessage(), e);
@@ -161,6 +165,8 @@ public class BidConfirmServlet extends HttpServlet {
            response.sendRedirect("bid_confirm.jsp");
            return;
         }
+
+        user.incrementBidCount();
 
         // Remove the bean, which is used to pass form data between the view (bid_confirm.jsp)
         // and the controller (BidConfirmServlet). We no longer need it as we are done.
