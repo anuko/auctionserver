@@ -333,7 +333,7 @@ public class AuctionItem {
         if (status == 0)
             return I18n.get("state.auction.closed");
 
-        return I18n.get("state.unknown");
+        return I18n.get("state.auction.unknown");
     }
 
     public String getTopBidderObfuscatedUuid() {

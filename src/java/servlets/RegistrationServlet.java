@@ -177,8 +177,8 @@ public class RegistrationServlet extends HttpServlet {
         // and the controller (RegistrationServlet). We no longer need it as we are done.
         session.removeAttribute("register_bean");
 
-        // Everything is good. Set registration_successful attribute and redirect back to the view.
-        session.setAttribute("registration_successful", I18n.get("message.registration_successful"));
-        response.sendRedirect("register.jsp");
+        // Everything is good. Set registration_successful attribute and redirect to sucess page.
+        session.setAttribute("success_message", I18n.get("message.registration_successful"));
+        response.sendRedirect("success.jsp");
     }
 }

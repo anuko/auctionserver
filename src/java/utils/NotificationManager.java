@@ -318,40 +318,6 @@ public class NotificationManager {
         }
     }
 
-
-    /**
-     * Notifies user that a registration is required.
-     *
-     * @param email user email.
-     * @param register_uri server registration URI.
-     */
-    public static void notifyUserRegistrationRequired(String email, String register_uri) {
-
-        // Prepare message body.
-        String msg_subject = I18n.get("email.registration_required.subject");
-        String msg_body = I18n.get("email.registration_required.body", register_uri);
-
-        try {
-            Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            Session mailSession = (Session) envCtx.lookup("mail/Session");
-            String from = "noreply@anuko.com";
-
-            MimeMessage msg = new MimeMessage(mailSession);
-            msg.setFrom(new InternetAddress(from, I18n.get("title")));
-
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, true));
-            msg.setSubject(msg_subject, "UTF-8");
-            msg.setText(msg_body, "UTF-8");
-            Transport.send(msg);
-        }
-        catch (Exception e) {
-            // Do nothing, this is not expected.
-            System.out.println("Exception when sending notification email... " + e.getMessage());
-        }
-    }
-
-
     /**
      * Notifies newly registered user to confirm their registration.
      *

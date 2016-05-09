@@ -132,15 +132,15 @@ public class Bid {
 
     public String getState() {
         if (confirmed == 0)
-            return I18n.get("state.unconfirmed");
+            return I18n.get("state.bid.unconfirmed");
         if (processed == 0)
-            return I18n.get("state.unprocessed");
+            return I18n.get("state.bid.unprocessed");
         if (status == 0)
-            return I18n.get("state.lost");
+            return I18n.get("state.bid.lost");
         if (status == 1)
-            return I18n.get("state.winning");
+            return I18n.get("state.bid.winning");
 
-        return I18n.get("state.unknown");
+        return I18n.get("state.bid.unknown");
     }
 
 
