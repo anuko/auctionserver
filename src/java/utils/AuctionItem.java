@@ -18,22 +18,21 @@ There are only two ways to violate the license:
 This license applies to this document only, not any other software that it
 may be combined with.
 */
-
-
 package utils;
-
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Date;
+import listeners.ApplicationListener;
 
 
 /**
  * Holds information about a single auction item.
- * An instance of this class represents an item in its entirety.
  *
  * @author Nik Okuntseff
  */
@@ -61,10 +60,8 @@ public class AuctionItem {
     private int status;
     private String item_uri;
 
-
     public AuctionItem() {
     }
-
 
     /**
      * Initializes an item from the database.
@@ -117,144 +114,114 @@ public class AuctionItem {
         }
     }
 
-
     // Getter and setter functions below.
-
-
     public String getUuid() {
         return uuid;
     }
-
 
     public void setUuid(String val) {
         uuid = val;
     }
 
-
     public String getOrigin() {
         return origin;
     }
-
 
     public void setOrigin(String val) {
         origin = val;
     }
 
-
     public String getSellerUuid() {
         return seller_uuid;
     }
-
 
     public void setSellerUuid(String val) {
         seller_uuid = val;
     }
 
-
     public String getName() {
         return name;
     }
-
 
     public void setName(String val) {
         name = val;
     }
 
-
     public String getDescription() {
         return description;
     }
-
 
     public void setDescription(String val) {
         description = val;
     }
 
-
     public String getImageUri() {
         return image_uri;
     }
-
 
     public void setImageUri(String val) {
         image_uri = val;
     }
 
-
     public String getCreatedTimestamp() {
         return created_timestamp;
     }
-
 
     public void setCreatedTimestamp(String val) {
         created_timestamp = val;
     }
 
-
     public String getCloseTimestamp() {
         return close_timestamp;
     }
-
 
     public void setCloseTimestamp(String val) {
         close_timestamp = val;
     }
 
-
     public String getCurrency() {
         return currency;
     }
-
 
     public void setCurrency(String val) {
         currency = val;
     }
 
-
     public float getReservePrice() {
         return reserve_price;
     }
-
 
     public void setReservePrice(float val) {
         reserve_price = val;
     }
 
-
     public int getBids() {
         return bids;
     }
-
 
     public void setBids(int val) {
         bids = val;
     }
 
-
     public float getTopBid() {
         return top_bid;
     }
-
 
     public void setTopBid(float val) {
         top_bid = val;
     }
 
-
     public String getTopBidUuid() {
         return top_bid_uuid;
     }
-
 
     public void setTopBidUuid(String val) {
         top_bid_uuid = val;
     }
 
-
     public String getTopBidderName() {
         return top_bidder_name;
     }
-
 
     public void setTopBidderName(String val) {
         top_bidder_name = val;
@@ -264,36 +231,29 @@ public class AuctionItem {
         return top_bidder_uuid;
     }
 
-
     public void setTopBidderUuid(String val) {
         top_bidder_uuid = val;
     }
-
 
     public int getApproved() {
         return approved;
     }
 
-
     public void setApproved(int val) {
         approved = val;
     }
-
 
     public int getProcessed() {
         return processed;
     }
 
-
     public void setProcessed(int val) {
         processed = val;
     }
 
-
     public int getStatus() {
         return status;
     }
-
 
     public void setStatus(int val) {
         status = val;
@@ -303,26 +263,59 @@ public class AuctionItem {
         return item_uri;
     }
 
-
     public void setItemUri(String val) {
         item_uri = val;
     }
 
-
+    /**
+     * Returns localized top bid with currency.
+     */
     public String getTopBidString() {
         return currency + " " + String.format(I18n.getLocale(), "%.2f", top_bid);
     }
 
+    /**
+     * Returns localized top bid with bidder info.
+     */
     public String getTopBidWithBidder() {
         String currentBidString = getTopBidString();
-        //if (bids > 0)
-        //    currentBidString += " (" + getTopBidderName() + ")";
         if (bids > 0)
             currentBidString += " " + I18n.get("label.from") + " " + getTopBidderObfuscatedUuid();
         return currentBidString;
     }
 
+    /**
+     * Returns obfuscated bidder UUID.
+     */
+    public String getTopBidderObfuscatedUuid() {
+        return top_bidder_uuid.charAt(0) + "***" + top_bidder_uuid.charAt(35);
+    }
 
+    /**
+     * Returns localized remaining time in "N days hh:mm" format.
+     */
+    public String getTimeRemaining() {
+
+        Date now = new Date();
+        Date close = now;
+        try { close = ApplicationListener.getSimpleDateFormat().parse(close_timestamp); }
+        catch (ParseException e) { }
+
+        long diff = close.getTime() - now.getTime(); // Milliseconds.
+
+        // long diffSeconds = diff / 1000 % 60;
+	long diffMinutes = diff / (60 * 1000) % 60;
+	long diffHours = diff / (60 * 60 * 1000) % 24;
+	long diffDays = diff / (24 * 60 * 60 * 1000);
+
+        String timeRemaining = diffDays + " " + I18n.get("remaining.days");
+        timeRemaining += " " + String.format("%02d:%02d", diffHours, diffMinutes);
+        return timeRemaining;
+    }
+
+    /**
+     * Returns state of the item.
+     */
     public String getState() {
         if (processed == 0 && approved == 0)
             return I18n.get("state.auction.pending");
@@ -334,9 +327,5 @@ public class AuctionItem {
             return I18n.get("state.auction.closed");
 
         return I18n.get("state.auction.unknown");
-    }
-
-    public String getTopBidderObfuscatedUuid() {
-        return top_bidder_uuid.charAt(0) + "***" + top_bidder_uuid.charAt(35);
     }
 }

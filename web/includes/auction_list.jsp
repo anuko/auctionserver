@@ -31,7 +31,7 @@
         <td><a href="auction.jsp?uuid=${item.uuid}">${item.name}</a></td>
         <td>${item.bids}</a></td>
         <td>${item.topBidString}</a></td>
-        <td>${item.closeTimestamp}</a></td>
+        <td>${item.timeRemaining}</a></td>
     </tr>
 </c:forEach>
     </tbody>

@@ -12,7 +12,7 @@
 <img class="img-responsive center-block" src="${item.imageUri}" alt="${item.name}">
 <h3><fmt:message key="label.description"/></h3>
 <p>${item.description}</p>
-<p><fmt:message key="label.time_remaining"/>: ${item.closeTimestamp}</p>
+<p><fmt:message key="label.time_remaining"/>: ${item.timeRemaining}</p>
 <p><fmt:message key="label.current_bid"/>: ${item.topBidWithBidder}</p>
 
 <!-- Bid form. -->

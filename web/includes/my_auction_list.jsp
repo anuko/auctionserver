@@ -35,7 +35,7 @@
         <td><a href="auction_edit.jsp?uuid=${item.uuid}">${item.name}</a></td>
         <td>${item.bids}</a></td>
         <td>${item.topBidString}</a></td>
-        <td>${item.closeTimestamp}</a></td>
+        <td>${item.timeRemaining}</a></td>
         <td>${item.state}</a></td>
         <td><a href="auction_edit.jsp?uuid=${item.uuid}"><fmt:message key="label.edit"/></a></td>
         <td><a href="auction_delete.jsp?uuid=${item.uuid}"><fmt:message key="label.delete"/></a></td>

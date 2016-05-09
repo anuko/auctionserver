@@ -29,7 +29,7 @@
       </tr>
       <tr>
         <td align="right"><fmt:message key="label.time_remaining"/>:</td>
-        <td><input type="text" name="end" value="${item.closeTimestamp}" disabled></td>
+        <td><input type="text" name="end" value="${item.timeRemaining}" disabled></td>
       </tr>
       <tr><td>&nbsp;</td></tr>
       <form action="frame" method="post">
