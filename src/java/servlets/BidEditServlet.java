@@ -150,7 +150,7 @@ Log.error("NIK DEBUG, we are in doPost of BidEditServlet...");
         // and the controller (BidEditServlet). We no longer need it as we are done.
         session.removeAttribute("bid_edit_bean");
 
-        // Everything is good, normal exit by a redirect to my_unconfirmed_bids.jsp page.
-        response.sendRedirect("my_unconfirmed_bids.jsp");
+        // Everything is good, normal exit by a redirect to my_bids.jsp page.
+        response.sendRedirect("my_bids.jsp");
     }
 }
