@@ -71,6 +71,7 @@ CREATE TABLE as_items (
   top_bid_uuid       CHAR(36),                  # Current top bid UUID.
   approved           INTEGER,                   # Whether the item is approved for site. 1 - approved, 0 - disapproved, NULL - not reviewed.
   processed          INTEGER        NOT NULL DEFAULT 0, # Whether the item is processed by this server. 0 means "not processed".
+  reminder_sent      INTEGER        NOT NULL DEFAULT 0, # Whether a 24-hour closing reminder is sent to all losing bidders.
   status             INTEGER,                   # Auction status. 1 - active, 0 - closed, NULL - deleted.
   PRIMARY KEY (uuid)
 );

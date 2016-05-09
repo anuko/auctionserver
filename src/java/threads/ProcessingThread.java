@@ -18,33 +18,26 @@ There are only two ways to violate the license:
 This license applies to this document only, not any other software that it
 may be combined with.
 */
-
-
 package threads;
-
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import listeners.ApplicationListener;
 import utils.AuctionManager;
 import utils.DatabaseManager;
 import utils.NotificationManager;
-import utils.BidManager;
 
 
 /**
  * Processing thread for auction server.
- * Handles 3 types of workflows:
- *   1) auction creation processing
- *   2) bid processing
- *   3) auction closing processing
- * This thread runs continuously and does things in sequence
- * (when there is anything to do).
+ * Closes expired auctions, also sends closing reminders for items.
  *
  * @author Nik Okuntseff
  */
@@ -54,7 +47,7 @@ public class ProcessingThread implements Runnable {
 
 
     /**
-     * Implements 3 types of workflow processing.
+     * Closes expired auctions and sends closing reminders for items.
      */
     @Override
     public void run() {
@@ -62,9 +55,8 @@ public class ProcessingThread implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
 
             // Do each workflow in a separate call.
-            // processNewAuctions();
-            // processNewBids();
             closeExpiredAuctions();
+            sendClosingReminders();
 
             // Wait a minute.
             try {
@@ -76,64 +68,6 @@ public class ProcessingThread implements Runnable {
             }
         }
     }
-
-
-    /**
-     * Processes new auctions by sending a notification to site admin.
-     */
-    /*
-    private void processNewAuctions() {
-
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseManager.getConnection();
-
-            pstmt = conn.prepareStatement("select uuid, name from as_items where approved is null and processed = 0");
-            rs = pstmt.executeQuery();
-            while (rs.next()) {
-                String uuid = rs.getString(1);
-                NotificationManager.notifyAdminNewAuction(uuid);
-            }
-        }
-        catch (SQLException e) {
-            Log.error(e.getMessage(), e);
-        }
-        finally {
-            DatabaseManager.closeConnection(rs, pstmt, conn);
-        }
-    }*/
-
-
-    /**
-     * Processes new bids.
-     */
-    /*
-    private void processNewBids() {
-
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseManager.getConnection();
-
-            pstmt = conn.prepareStatement("select uuid from as_bids where confirmed = 1 and processed = 0");
-            rs = pstmt.executeQuery();
-            while (rs.next()) {
-                String uuid = rs.getString(1);
-                BidManager.processNewBid(uuid);
-            }
-        }
-        catch (SQLException e) {
-            Log.error(e.getMessage(), e);
-        }
-        finally {
-            DatabaseManager.closeConnection(rs, pstmt, conn);
-        }
-    }*/
 
 
     /**
@@ -180,5 +114,68 @@ public class ProcessingThread implements Runnable {
 
         // Notify bidder.
         NotificationManager.notifyBidderAuctionClose(item_uuid);
+    }
+
+    /**
+     * Sends 24-hour closing reminders to losing bidders.
+     */
+    private void sendClosingReminders() {
+
+        // Determine cutoff_timestamp.
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, +1);
+        Date tomorrow = new Date(c.getTimeInMillis());
+        String cutoff_timestamp = ApplicationListener.getSimpleDateFormat().format(tomorrow);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select uuid from as_items where status = 1 and reminder_sent = 0 and close_timestamp < ?");
+            pstmt.setString(1, cutoff_timestamp);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String itemUuid = rs.getString(1);
+                AuctionManager.markReminderSent(itemUuid);
+                sendClosingReminder(itemUuid);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+    }
+
+    /**
+     * Sends a 24-hour closing reminder to all losing bidders for a single item.
+     */
+    private void sendClosingReminder(String itemUuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select distinct u.email from as_bids b " +
+                "left join as_users u on (u.uuid = b.user_uuid) " +
+                "where b.item_uuid = ? and b.status = 0");
+            pstmt.setString(1, itemUuid);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String email = rs.getString("email");
+                NotificationManager.notifyBidderClosingReminder(itemUuid, email);
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
     }
 }

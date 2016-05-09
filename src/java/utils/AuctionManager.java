@@ -65,4 +65,28 @@ public class AuctionManager {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
     }
+
+    /**
+     * Sets reminder_sent flag for an item.
+     *
+     * @param item_uuid item <code>UUID</code>
+     */
+    public static void markReminderSent(String item_uuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("update as_items set reminder_sent = 1 where uuid = ?");
+            pstmt.setString(1, item_uuid);
+            pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+    }
 }

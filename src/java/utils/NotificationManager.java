@@ -449,4 +449,40 @@ public class NotificationManager {
             System.out.println("Exception when sending notification email... " + e.getMessage());
         }
     }
+
+    /**
+     * Notifies user to confirm their bid.
+     *
+     * @param email user email.
+     * @param uri random uri for user to click on.
+     */
+    public static void notifyBidderClosingReminder(String itemUuid, String email) {
+
+        AuctionItem item = new AuctionItem(itemUuid);
+
+        // Prepare message body.
+        String msg_subject = I18n.get("email.closing_reminder.subject");
+        String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
+        String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
+        String msg_body = I18n.get("email.closing_reminder.body", item.getName(), localizedBid, itemUri);
+
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            Session mailSession = (Session) envCtx.lookup("mail/Session");
+            String from = "noreply@anuko.com";
+
+            MimeMessage msg = new MimeMessage(mailSession);
+            msg.setFrom(new InternetAddress(from, I18n.get("title")));
+
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, true));
+            msg.setSubject(msg_subject, "UTF-8");
+            msg.setText(msg_body, "UTF-8");
+            Transport.send(msg);
+        }
+        catch (Exception e) {
+            // Do nothing, this is not expected.
+            System.out.println("Exception when sending notification email... " + e.getMessage());
+        }
+    }
 }
