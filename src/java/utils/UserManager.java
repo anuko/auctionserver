@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.HashMap;
 import listeners.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,28 +111,29 @@ public class UserManager {
 
 
     /**
-     * Retrieves seller email.
+     * Retrieves seller information
      *
      * @param item_uuid item <code>UUID</code>
-     * @return seller email or null if not found.
+     * @return a map of seller attributes such as name and email
      */
-    public static String getSellerEmail(String item_uuid) {
-
-        String email = null;
+    public static HashMap<String, String> getSellerInfo(String item_uuid) {
 
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        HashMap<String, String> map = null;
         try {
             conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("select i.seller_uuid, u.email " +
+            pstmt = conn.prepareStatement("select i.seller_uuid, u.name, u.email " +
                 "from as_items i " +
                 "left join as_users u on (u.uuid = i.seller_uuid) " +
                 "where i.uuid = ?");
             pstmt.setString(1, item_uuid);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                email = rs.getString("email");
+                map = new HashMap<String, String>();
+                map.put("name", rs.getString("name"));
+                map.put("email", rs.getString("email"));
             }
         }
         catch (SQLException e) {
@@ -140,12 +142,47 @@ public class UserManager {
         finally {
             DatabaseManager.closeConnection(rs, pstmt, conn);
         }
-        return email;
+        return map;
     }
 
 
     /**
-     * Retrieves bidder email.
+     * Retrieves bidder email
+     *
+     * @param bid_uuid bid<code>UUID</code>
+     * @return a map of bidder attributes such as name and email
+     */
+    public static HashMap<String, String> getBidderInfo(String bid_uuid) {
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        HashMap<String, String> map = null;
+        try {
+            conn = DatabaseManager.getConnection();
+            pstmt = conn.prepareStatement("select b.user_uuid, u.name, u.email " +
+                "from as_bids b " +
+                "left join as_users u on (u.uuid = b.user_uuid) " +
+                "where b.uuid = ?");
+            pstmt.setString(1, bid_uuid);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                map = new HashMap<String, String>();
+                map.put("name", rs.getString("name"));
+                map.put("email", rs.getString("email"));
+            }
+        }
+        catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        finally {
+            DatabaseManager.closeConnection(rs, pstmt, conn);
+        }
+        return map;
+    }
+
+    /**
+     * Retrieves bidder information.
      *
      * @param bid_uuid bid<code>UUID</code>
      * @return bidder email or null if not found.

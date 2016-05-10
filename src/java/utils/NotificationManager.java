@@ -18,15 +18,8 @@ There are only two ways to violate the license:
 This license applies to this document only, not any other software that it
 may be combined with.
 */
-
-
 package utils;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -36,6 +29,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.HashMap;
 
 
 /**
@@ -46,7 +40,6 @@ import org.slf4j.LoggerFactory;
 public class NotificationManager {
 
     private static final Logger Log = LoggerFactory.getLogger(NotificationManager.class);
-
 
     /**
      * Notifies site admin about a new auction that needs an approval.
@@ -76,26 +69,7 @@ public class NotificationManager {
             // Do nothing, this is not expected.
             System.out.println("Exception when sending notification email... " + e.getMessage());
         }
-/*
-        // Update processed flag.
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseManager.getConnection();
-            pstmt = conn.prepareStatement("update as_items set processed = 1 where uuid = ?");
-            pstmt.setString(1, uuid);
-            pstmt.executeUpdate();
-        }
-        catch (SQLException e) {
-            Log.error(e.getMessage(), e);
-        }
-        finally {
-            DatabaseManager.closeConnection(rs, pstmt, conn);
-        }*/
     }
-
 
     /**
      * Notifies the seller about a new bid.
@@ -107,14 +81,14 @@ public class NotificationManager {
 
         AuctionItem item = new AuctionItem(item_uuid);
 
-        // Obtain seller email.
-        String sellerEmail = UserManager.getSellerEmail(item_uuid);
+        // Obtain seller info.
+        HashMap<String, String> map = UserManager.getSellerInfo(item_uuid);
 
         // Prepare message body.
         String msg_subject = I18n.get("email.new_bid.subject");
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
         String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
-        String msg_body = I18n.get("email.new_bid.body", item.getName(), itemUri, localizedBid);
+        String msg_body = I18n.get("email.new_bid.body", map.get("name"), item.getName(), itemUri, localizedBid);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -124,7 +98,7 @@ public class NotificationManager {
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(from, I18n.get("title")));
 
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sellerEmail, true));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(map.get("email"), true));
             msg.setSubject(msg_subject, "UTF-8");
             msg.setText(msg_body, "UTF-8");
             Transport.send(msg);
@@ -150,13 +124,14 @@ public class NotificationManager {
         // Is losing bidder the same as winning bidder?
         // TODO: consider checking for it.
 
-        String bidderEmail = UserManager.getBidderEmail(bid_uuid);
+        // Obtain bidder info.
+        HashMap<String, String> map = UserManager.getBidderInfo(bid_uuid);
 
         // Prepare message body.
         String msg_subject = I18n.get("email.lost_bid.subject");
         String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-        String msg_body = I18n.get("email.lost_bid.body", item.getName(), localizedBid, item.getCloseTimestamp(), itemUri);
+        String msg_body = I18n.get("email.lost_bid.body", map.get("name"), item.getName(), localizedBid, item.getTimeRemaining(), itemUri);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -166,7 +141,7 @@ public class NotificationManager {
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(from, I18n.get("title")));
 
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bidderEmail, true));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(map.get("email"), true));
             msg.setSubject(msg_subject, "UTF-8");
             msg.setText(msg_body, "UTF-8");
             Transport.send(msg);
@@ -191,13 +166,13 @@ public class NotificationManager {
     public static void notifyCurrentTopBidder(String bid_uuid, String item_uuid, float bid_amount) {
 
         AuctionItem item = new AuctionItem(item_uuid);
-        String bidderEmail = UserManager.getBidderEmail(bid_uuid);
+        HashMap<String, String> map = UserManager.getBidderInfo(bid_uuid);
 
        // Prepare message body.
         String msg_subject = I18n.get("email.top_bid.subject");
         String itemUri = Site.getUri() + "/auction.jsp?uuid=" + item.getUuid();
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-        String msg_body = I18n.get("email.top_bid.body", item.getName(), itemUri, localizedBid);
+        String msg_body = I18n.get("email.top_bid.body", map.get("name"), item.getName(), itemUri, localizedBid);
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -207,7 +182,7 @@ public class NotificationManager {
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(from, I18n.get("title")));
 
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bidderEmail, true));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(map.get("email"), true));
             msg.setSubject(msg_subject, "UTF-8");
             msg.setText(msg_body, "UTF-8");
             Transport.send(msg);
@@ -229,8 +204,8 @@ public class NotificationManager {
      */
     public static void notifySellerAuctionClose(String item_uuid) {
 
-        // Obtain seller email.
-        String sellerEmail = UserManager.getSellerEmail(item_uuid);
+        // Obtain seller info.
+        HashMap<String, String> map = UserManager.getSellerInfo(item_uuid);
 
         // Obtain item details.
         AuctionItem item = new AuctionItem(item_uuid);
@@ -242,10 +217,10 @@ public class NotificationManager {
         if (sold) {
             msg_subject = I18n.get("email.item_sold.subject");
             String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
-            msg_body = I18n.get("email.item_sold.body", item.getName(), localizedBid);
+            msg_body = I18n.get("email.item_sold.body", map.get("name"), item.getName(), localizedBid);
         } else {
             msg_subject = I18n.get("email.item_not_sold.subject");
-            msg_body = I18n.get("email.item_not_sold.body", item.getName());
+            msg_body = I18n.get("email.item_not_sold.body", map.get("name"), item.getName());
         }
         try {
             Context initCtx = new InitialContext();
@@ -256,7 +231,7 @@ public class NotificationManager {
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(from, I18n.get("title")));
 
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sellerEmail, true));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(map.get("email"), true));
             msg.setSubject(msg_subject, "UTF-8");
             msg.setText(msg_body, "UTF-8");
             Transport.send(msg);
@@ -284,7 +259,7 @@ public class NotificationManager {
         boolean sold = (item.getTopBid() > item.getReservePrice());
 
         // Obtain bidder email.
-        String bidderEmail = UserManager.getBidderEmail(bid_uuid);
+        HashMap<String, String> map = UserManager.getBidderInfo(bid_uuid);
 
         // Prepare message body.
         String msg_subject;
@@ -292,10 +267,10 @@ public class NotificationManager {
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
         if (sold) {
             msg_subject = I18n.get("email.item_won.subject");
-            msg_body = I18n.get("email.item_won.body", item.getName(), localizedBid);
+            msg_body = I18n.get("email.item_won.body", map.get("name"), item.getName(), localizedBid);
         } else {
             msg_subject = I18n.get("email.reserve_not_met.subject");
-            msg_body = I18n.get("email.reserve_not_met.body", item.getName(), localizedBid);
+            msg_body = I18n.get("email.reserve_not_met.body", map.get("name"), item.getName(), localizedBid);
         }
 
         try {
@@ -307,7 +282,7 @@ public class NotificationManager {
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(from, I18n.get("title")));
 
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bidderEmail, true));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(map.get("email"), true));
             msg.setSubject(msg_subject, "UTF-8");
             msg.setText(msg_body, "UTF-8");
             Transport.send(msg);

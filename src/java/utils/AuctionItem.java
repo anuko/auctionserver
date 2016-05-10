@@ -302,6 +302,7 @@ public class AuctionItem {
         catch (ParseException e) { }
 
         long diff = close.getTime() - now.getTime(); // Milliseconds.
+        if (diff < 0) diff = 0;
 
         // long diffSeconds = diff / 1000 % 60;
 	long diffMinutes = diff / (60 * 1000) % 60;

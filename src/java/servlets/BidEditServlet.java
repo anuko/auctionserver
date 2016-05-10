@@ -67,7 +67,6 @@ public class BidEditServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-Log.error("NIK DEBUG, we are in doPost of BidEditServlet...");
 
         // Do nothing if we don't have a logged in user.
         HttpSession session = request.getSession();
