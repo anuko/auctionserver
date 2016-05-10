@@ -150,7 +150,7 @@ public class RegistrationServlet extends HttpServlet {
             pstmt.setString(2, login);
             pstmt.setString(3, password);
             pstmt.setString(4, name);
-            pstmt.setString(5, email);
+            pstmt.setString(5, email.toLowerCase(I18n.getLocale()));
             pstmt.executeUpdate();
 
             // Insert reference for user into as_tmp_refs table.

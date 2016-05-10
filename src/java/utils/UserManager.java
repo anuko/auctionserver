@@ -308,7 +308,7 @@ public class UserManager {
             pstmt.setString(2, email);
             pstmt.setString(3, password);
             pstmt.setString(4, I18n.get("label.user"));
-            pstmt.setString(5, email);
+            pstmt.setString(5, email.toLowerCase(I18n.getLocale()));
             int rows = pstmt.executeUpdate();
             userCreated = (1 == rows);
         }
