@@ -266,8 +266,9 @@ public class NotificationManager {
         String msg_body;
         String localizedBid = item.getCurrency() + " " + String.format(I18n.getLocale(), "%.2f", item.getTopBid());
         if (sold) {
+            String payUri = Site.getUri() + "/pay.jsp?uuid=" + item.getUuid();
             msg_subject = I18n.get("email.item_won.subject");
-            msg_body = I18n.get("email.item_won.body", map.get("name"), item.getName(), localizedBid);
+            msg_body = I18n.get("email.item_won.body", map.get("name"), item.getName(), payUri);
         } else {
             msg_subject = I18n.get("email.reserve_not_met.subject");
             msg_body = I18n.get("email.reserve_not_met.body", map.get("name"), item.getName(), localizedBid);

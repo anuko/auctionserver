@@ -25,9 +25,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import listeners.ApplicationListener;
 
 
@@ -292,6 +295,13 @@ public class AuctionItem {
     }
 
     /**
+     * Returns obfuscated item UUID.
+     */
+    public String getObfuscatedUuid() {
+        return uuid.charAt(0) + "***" + uuid.charAt(35);
+    }
+
+    /**
      * Returns localized remaining time in "N days hh:mm" format.
      */
     public String getTimeRemaining() {
@@ -328,5 +338,22 @@ public class AuctionItem {
             return I18n.get("state.auction.closed");
 
         return I18n.get("state.auction.unknown");
+    }
+
+    /**
+     * Returns checkout email for the item.
+     */
+    public String getCheckoutEmail() {
+
+        String checkoutEmail = null;
+        List<HashMap<String,String>> currencies = (List<HashMap<String,String>>) ApplicationListener.getServletContext().getAttribute("currencies");
+
+        for (HashMap<String,String> currency : currencies) {
+            if (currency.get("name").equals(this.currency)) {
+                checkoutEmail = currency.get("checkout_email");
+                break;
+            }
+        }
+        return checkoutEmail;
     }
 }

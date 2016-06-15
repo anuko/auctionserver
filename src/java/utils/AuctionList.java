@@ -111,7 +111,7 @@ public class AuctionList {
         try {
             conn = DatabaseManager.getConnection();
             pstmt = conn.prepareStatement("select uuid, origin, seller_uuid, name, " +
-                    "top_bid, bids, close_timestamp, currency, approved " +
+                    "top_bid, bids, close_timestamp, currency, approved, status " +
                     "from as_items " +
                     "where seller_uuid = ? and close_timestamp > ? and status is not null " +
                     "order by close_timestamp");
@@ -130,6 +130,7 @@ public class AuctionList {
                 item.setCloseTimestamp(rs.getString("close_timestamp"));
                 item.setCurrency(rs.getString("currency"));
                 item.setApproved(rs.getInt("approved"));
+                item.setStatus(rs.getInt("status"));
                 list.add(item);
                 // Limit output to 50 rows to keep things simple for now.
                 if (++count >= 50)
