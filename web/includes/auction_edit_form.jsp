@@ -15,6 +15,9 @@
     pageContext.setAttribute("bean", bean);
 %>
 
+<h1><fmt:message key="title.auction_edit"/></h1>
+<div class="page_hint"><fmt:message key="hint.auction_edit"/></div>
+
 <!-- Error message, if any. -->
 <div class="error">${user.errorBean.auctionEditError}</div>
 
