@@ -45,10 +45,10 @@ public class BidBean {
     private static final Logger Log = LoggerFactory.getLogger(BidBean.class);
 
     private String uuid;         // UUID for this bid.
-    private String item_uuid;    // UUID of the item using is bidding on.
+    private String item_uuid;    // UUID of the item user is bidding on.
     private String seller_uuid;  // Needed to prohibit bidding on own items.
-    private String item_name;
-    private String currency;
+    private String item_name;    // Item name.
+    private String currency;     // Item currency.
     private float current_bid;   // Current top bid on the item. Float because we never display it.
     private String amount;       // Amount of this bid, must be greater then current bid.
 
