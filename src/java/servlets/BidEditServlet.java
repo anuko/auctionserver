@@ -118,11 +118,12 @@ public class BidEditServlet extends HttpServlet {
             response.sendRedirect("bid_edit.jsp");
             return;
         }
+        /* // Temporarily allow bidding on own items, uncomment eventually when we have a robust system.
         if (bean.getSellerUuid().equals(user.getUuid())) {
             user.getErrorBean().setBidConfirmError(I18n.get("error.own_item"));
             response.sendRedirect("bid_edit.jsp");
             return;
-        }
+        }*/
         // Finished validating user input.
 
         Connection conn = null;
