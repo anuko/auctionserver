@@ -1,0 +1,8 @@
+h1, h2  { color: white; }
+h3, h4, h5 { color: #e2bc6f; }
+
+body { color: white; }
+
+a:link { color: white;  }
+a:visited { color: white; }
+a:hover { color: white; }
