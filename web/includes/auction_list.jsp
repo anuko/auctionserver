@@ -1,14 +1,18 @@
+<%@page import="listeners.ApplicationListener"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="utils.AuctionList, utils.AuctionItem, java.util.List" %>
 
 <%
+    // Obtain site name.
+    pageContext.setAttribute("site_name", ApplicationListener.getSite().getName());
+
     // Obtain auction items.
     List<AuctionItem> items = AuctionList.getAuctions();
     pageContext.setAttribute("items", items);
 %>
 
-<h1><fmt:message key="title.auctions"/></h1>
+<h1>${site_name}</h1>
 
 <c:if test="${items.size() == 0}">
     <fmt:message key="error.no_auctions"/>

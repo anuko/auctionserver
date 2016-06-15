@@ -83,14 +83,15 @@ public class ApplicationListener implements ServletContextListener {
 
             // Obtain supported currencies.
             List<HashMap<String,String>> currencies = new ArrayList<HashMap<String,String>>();
-            pstmt = conn.prepareStatement("select currency from as_currencies order by ord_num");
+            pstmt = conn.prepareStatement("select currency, checkout_email from as_currencies order by ord_num");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 HashMap<String, String> map = new HashMap();
-                map.put("name", rs.getString(1));
+                map.put("name", rs.getString("currency"));
+                map.put("checkout_email", rs.getString("checkout_email"));
                 currencies.add(map);
             }
-            // Add curency set to the application context.
+            // Add currency set to the application context.
             context.setAttribute("currencies", currencies);
 
             // Obtain supported durations.

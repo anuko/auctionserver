@@ -28,17 +28,10 @@ CREATE TABLE as_users (
 # as_currencies contains currency symbols supported by this site.
 CREATE TABLE as_currencies (
   currency           CHAR(3)        NOT NULL,   # Currency symbol: USD, CAD, NZD, etc.
+  checkout_email     VARCHAR(64),               # Checkout email.
   ord_num            INTEGER,                   # Ordering number for currency list.
   PRIMARY KEY (currency)
 );
-
-# Insert some currencies.
-insert into as_currencies values('USD', 0);
-insert into as_currencies values('NZD', 10);
-insert into as_currencies values('AUD', 20);
-insert into as_currencies values('EUR', 30);
-insert into as_currencies values('CAD', 40);
-
 
 # as_durations contains possible auction duration intervals in days supported by this site.
 CREATE TABLE as_durations (
