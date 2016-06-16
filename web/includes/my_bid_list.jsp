@@ -10,6 +10,7 @@
 %>
 
 <h1><fmt:message key="title.my_bids"/></h1>
+<div class="page_hint"><fmt:message key="hint.my_bids"/></div>
 
 <c:if test="${items.size() == 0}">
     <fmt:message key="error.no_bids"/>
