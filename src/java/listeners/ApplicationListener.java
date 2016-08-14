@@ -41,6 +41,7 @@ import utils.DatabaseManager;
 import utils.Site;
 import utils.I18n;
 import utils.Authenticator;
+import utils.VisitorTracker;
 import threads.ProcessingThread;
 
 
@@ -59,6 +60,7 @@ public class ApplicationListener implements ServletContextListener {
     private static Site site;
     private static I18n i18n;
     private static Authenticator auth;
+    private static VisitorTracker tracker;
     Thread processingThread = new Thread(new ProcessingThread());
 
 
@@ -74,7 +76,6 @@ public class ApplicationListener implements ServletContextListener {
         context = sce.getServletContext();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        site = new Site();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -138,6 +139,12 @@ public class ApplicationListener implements ServletContextListener {
         // Initialize authenticator.
         auth = new Authenticator();
 
+        // Initialize visitor tracker.
+        if (site.getTrackerConf() != null) {
+            tracker = new VisitorTracker(site.getTrackerConf());
+            context.setAttribute("tracker", tracker);
+        }
+
         // Start processing thread.
         processingThread.start();
     }
@@ -156,6 +163,7 @@ public class ApplicationListener implements ServletContextListener {
         site = null;
         i18n = null;
         auth = null;
+        tracker = null;
     }
 
 
@@ -207,5 +215,15 @@ public class ApplicationListener implements ServletContextListener {
      */
     public static Site getSite() {
         return site;
+    }
+
+
+    /**
+     * Returns a visitor tracker.
+     *
+     * @return initialized <code>VisitorTracker</code> object.
+     */
+    public static VisitorTracker getTracker() {
+        return tracker;
     }
 }

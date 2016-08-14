@@ -52,6 +52,7 @@ public class Site {
     private static String email;
     private static String language;
     private static String template;
+    private static String tracker_conf;
 
 
     /**
@@ -66,7 +67,7 @@ public class Site {
             conn = DatabaseManager.getConnection();
 
             // Obtain site info from the database.
-            pstmt = conn.prepareStatement("select uuid, name, uri, email, language, template from as_site_details");
+            pstmt = conn.prepareStatement("select uuid, name, uri, email, language, template, tracker_conf from as_site_details");
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 uuid = rs.getString("uuid");
@@ -75,6 +76,7 @@ public class Site {
                 email = rs.getString("email");
                 language = rs.getString("language");
                 template = rs.getString("template");
+                tracker_conf = rs.getString("tracker_conf");
             }
         }
         catch (SQLException e) {
@@ -116,5 +118,10 @@ public class Site {
 
     public static String getTemplate() {
         return template;
+    }
+
+
+    public static String getTrackerConf() {
+        return tracker_conf;
     }
 }

@@ -1,5 +1,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<%@ page import="utils.VisitorTracker" %>
+<%
+    VisitorTracker tracker = (VisitorTracker) application.getAttribute("tracker");
+    if (tracker != null) tracker.trackVisit(request, response);
+%>
+
 <!DOCTYPE html>
 <html>
 <head>

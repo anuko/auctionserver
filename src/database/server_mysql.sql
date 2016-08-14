@@ -8,7 +8,8 @@ CREATE TABLE as_site_details (
   uri                VARCHAR(256),              # URI at which the server is available to its users.
   email              VARCHAR(256),              # Email of site admin for notifications.
   language           VARCHAR(5),                # Language of the site, such as en, or pt-BR.
-  template           VARCHAR(64)                # Website design template.
+  template           VARCHAR(64),               # Website design template.
+  tracker_conf       VARCHAR(64)                # Path to visitor tracker config file, or NULL for no tracking.
 );
 
 
